@@ -4,8 +4,8 @@ import WortiseSDK
 
 public class WortiseConsentManager: NSObject, FlutterPlugin {
 
-    public static let channelId = "\(WortiseFlutterPlugin.channelMain)/consentManager"
-    
+    private static let channelId = "\(WortiseFlutterPlugin.channelMain)/consentManager"
+
 
     public static func register(with registrar: FlutterPluginRegistrar) {
         let channel = FlutterMethodChannel(name: channelId, binaryMessenger: registrar.messenger())
@@ -14,7 +14,7 @@ public class WortiseConsentManager: NSObject, FlutterPlugin {
 
         registrar.addMethodCallDelegate(instance, channel: channel)
     }
-    
+
 
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
         let args = call.arguments as? [String: Any]
@@ -41,13 +41,13 @@ public class WortiseConsentManager: NSObject, FlutterPlugin {
     }
 
 
-    fileprivate func request(_ args: [String: Any]?, result: @escaping FlutterResult) {
+    private func request(_ args: [String: Any]?, result: @escaping FlutterResult) {
         WAConsentManager.shared.request(WortiseFlutterPlugin.viewController!) {
             result($0)
         }
     }
 
-    fileprivate func requestIfRequired(_ args: [String: Any]?, result: @escaping FlutterResult) {
+    private func requestIfRequired(_ args: [String: Any]?, result: @escaping FlutterResult) {
         WAConsentManager.shared.request(ifRequired: WortiseFlutterPlugin.viewController!) {
             result($0)
         }

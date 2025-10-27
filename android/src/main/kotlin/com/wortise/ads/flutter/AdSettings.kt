@@ -57,7 +57,7 @@ class AdSettings : FlutterPlugin, MethodCallHandler {
     private fun getMaxAdContentRating(call: MethodCall, result: Result) {
         val rating = AdSettings.getMaxAdContentRating(context)
             ?.name
-            ?.toLowerCase()
+            ?.lowercase()
 
         result.success(rating)
     }
@@ -102,6 +102,6 @@ class AdSettings : FlutterPlugin, MethodCallHandler {
 
 
     companion object {
-        const val CHANNEL_ID = "${CHANNEL_MAIN}/adSettings"
+        private const val CHANNEL_ID = "${CHANNEL_MAIN}/adSettings"
     }
 }

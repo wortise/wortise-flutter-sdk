@@ -63,7 +63,7 @@ class DataManager : FlutterPlugin, MethodCallHandler {
     private fun getGender(call: MethodCall, result: Result) {
         val gender = DataManager.getGender(context)
             ?.name
-            ?.toLowerCase()
+            ?.lowercase()
 
         result.success(gender)
     }
@@ -98,6 +98,6 @@ class DataManager : FlutterPlugin, MethodCallHandler {
 
 
     companion object {
-        const val CHANNEL_ID = "${CHANNEL_MAIN}/dataManager"
+        private const val CHANNEL_ID = "${CHANNEL_MAIN}/dataManager"
     }
 }

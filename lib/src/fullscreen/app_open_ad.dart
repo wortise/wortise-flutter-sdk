@@ -2,9 +2,9 @@ import 'dart:async';
 
 import 'package:flutter/services.dart';
 
-import 'wortise_sdk.dart';
+import '../wortise_sdk.dart';
 
-enum InterstitialAdEvent {
+enum AppOpenAdEvent {
   CLICKED,
   DISMISSED,
   FAILED_TO_LOAD,
@@ -15,9 +15,9 @@ enum InterstitialAdEvent {
   SHOWN,
 }
 
-class InterstitialAd {
+class AppOpenAd {
 
-  static const CHANNEL_ID = "${WortiseSdk.CHANNEL_MAIN}/interstitialAd";
+  static const CHANNEL_ID = "${WortiseSdk.CHANNEL_MAIN}/appOpenAd";
 
   static const MethodChannel _channel = const MethodChannel(CHANNEL_ID);
 
@@ -26,12 +26,12 @@ class InterstitialAd {
 
   final String adUnitId;
 
-  final void Function(InterstitialAdEvent, dynamic)? listener;
+  final bool autoReload;
 
-  final bool reloadOnDismissed;
+  final void Function(AppOpenAdEvent, dynamic)? listener;
 
 
-  InterstitialAd(this.adUnitId, this.listener, {this.reloadOnDismissed = false}) {
+  AppOpenAd(this.adUnitId, {this.listener, this.autoReload = false}) {
     if (listener != null) {
       _adChannel = MethodChannel('${CHANNEL_ID}_$adUnitId');
       _adChannel?.setMethodCallHandler(_handleEvent);
@@ -54,6 +54,14 @@ class InterstitialAd {
     return await _channel.invokeMethod('isDestroyed', values);
   }
 
+  Future<bool> get isShowing async {
+    Map<String, dynamic> values = {
+      'adUnitId': adUnitId
+    };
+
+    return await _channel.invokeMethod('isShowing', values);
+  }
+
   Future<void> destroy() async {
     Map<String, dynamic> values = {
       'adUnitId': adUnitId
@@ -64,7 +72,8 @@ class InterstitialAd {
 
   Future<void> loadAd() async {
     Map<String, dynamic> values = {
-      'adUnitId': adUnitId
+      'adUnitId': adUnitId,
+      'autoReload': autoReload
     };
 
     await _channel.invokeMethod('loadAd', values);
@@ -78,44 +87,47 @@ class InterstitialAd {
     return await _channel.invokeMethod('showAd', values);
   }
 
+  Future<bool> tryToShowAd() async {
+    Map<String, dynamic> values = {
+      'adUnitId': adUnitId
+    };
+
+    return await _channel.invokeMethod('tryToShowAd', values);
+  }
+
 
   Future<dynamic> _handleEvent(MethodCall call) {
     switch (call.method) {
     case "clicked":
-      listener?.call(InterstitialAdEvent.CLICKED, call.arguments);
+      listener?.call(AppOpenAdEvent.CLICKED, call.arguments);
       break;
 
     case "dismissed":
-      listener?.call(InterstitialAdEvent.DISMISSED, call.arguments);
-
-      if (reloadOnDismissed) {
-        loadAd();
-      }
-
+      listener?.call(AppOpenAdEvent.DISMISSED, call.arguments);
       break;
 
     case "failedToLoad":
-      listener?.call(InterstitialAdEvent.FAILED_TO_LOAD, call.arguments);
+      listener?.call(AppOpenAdEvent.FAILED_TO_LOAD, call.arguments);
       break;
 
     case "failedToShow":
-      listener?.call(InterstitialAdEvent.FAILED_TO_SHOW, call.arguments);
+      listener?.call(AppOpenAdEvent.FAILED_TO_SHOW, call.arguments);
       break;
 
     case "impression":
-      listener?.call(InterstitialAdEvent.IMPRESSION, call.arguments);
+      listener?.call(AppOpenAdEvent.IMPRESSION, call.arguments);
       break;
 
     case "loaded":
-      listener?.call(InterstitialAdEvent.LOADED, call.arguments);
+      listener?.call(AppOpenAdEvent.LOADED, call.arguments);
       break;
-    
+
     case "revenuePaid":
-      listener?.call(InterstitialAdEvent.REVENUE_PAID, call.arguments);
+      listener?.call(AppOpenAdEvent.REVENUE_PAID, call.arguments);
       break;
 
     case "shown":
-      listener?.call(InterstitialAdEvent.SHOWN, call.arguments);
+      listener?.call(AppOpenAdEvent.SHOWN, call.arguments);
       break;
     }
 

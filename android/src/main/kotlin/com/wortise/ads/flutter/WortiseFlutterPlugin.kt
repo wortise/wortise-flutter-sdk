@@ -2,11 +2,11 @@ package com.wortise.ads.flutter
 
 import android.content.Context
 import com.wortise.ads.WortiseSdk
-import com.wortise.ads.flutter.AdWidgetFactory
 import com.wortise.ads.flutter.appopen.AppOpenAd
 import com.wortise.ads.flutter.banner.BannerAdViewFactory
 import com.wortise.ads.flutter.interstitial.InterstitialAd
 import com.wortise.ads.flutter.natives.GoogleNativeAdManager
+import com.wortise.ads.flutter.natives.NativeAdManager
 import com.wortise.ads.flutter.rewarded.RewardedAd
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
@@ -28,6 +28,7 @@ class WortiseFlutterPlugin : ActivityAware, FlutterPlugin, MethodCallHandler {
         DataManager          (),
         GoogleNativeAdManager(),
         InterstitialAd       (),
+        NativeAdManager      (),
         RewardedAd           ()
     )
 
@@ -118,6 +119,6 @@ class WortiseFlutterPlugin : ActivityAware, FlutterPlugin, MethodCallHandler {
 
 
     companion object {
-        const val CHANNEL_MAIN = "wortise"
+        internal const val CHANNEL_MAIN = "wortise"
     }
 }

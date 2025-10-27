@@ -4,13 +4,13 @@ import WortiseSDK
 
 public class WortiseInterstitialAd: NSObject, FlutterPlugin {
 
-    public static let channelId = "\(WortiseFlutterPlugin.channelMain)/interstitialAd"
+    private static let channelId = "\(WortiseFlutterPlugin.channelMain)/interstitialAd"
 
 
-    fileprivate var binaryMessenger: FlutterBinaryMessenger
+    private var binaryMessenger: FlutterBinaryMessenger
 
-    fileprivate var instances = [String: WAInterstitialAd]()
-    
+    private var instances = [String: WAInterstitialAd]()
+
 
     public static func register(with registrar: FlutterPluginRegistrar) {
         let binaryMessenger = registrar.messenger()
@@ -21,7 +21,7 @@ public class WortiseInterstitialAd: NSObject, FlutterPlugin {
 
         registrar.addMethodCallDelegate(instance, channel: channel)
     }
-    
+
 
     init(_ binaryMessenger: FlutterBinaryMessenger) {
         self.binaryMessenger = binaryMessenger
@@ -52,7 +52,7 @@ public class WortiseInterstitialAd: NSObject, FlutterPlugin {
     }
 
 
-    fileprivate func create(instance adUnitId: String) -> WAInterstitialAd {
+    private func create(instance adUnitId: String) -> WAInterstitialAd {
         let channelId = "\(WortiseInterstitialAd.channelId)_\(adUnitId)"
 
         let channel = FlutterMethodChannel(name: channelId, binaryMessenger: binaryMessenger)
@@ -66,9 +66,9 @@ public class WortiseInterstitialAd: NSObject, FlutterPlugin {
         return interstitialAd
     }
 
-    fileprivate func destroy(_ args: [String: Any]?, result: @escaping FlutterResult) {
+    private func destroy(_ args: [String: Any]?, result: @escaping FlutterResult) {
         guard let adUnitId = args?["adUnitId"] as? String else {
-            result(FlutterError(code: "INVALID_ARGUMENTS", message: "Ad unit ID is required", details: nil))
+            result(FlutterError.invalidArgument("Ad unit ID is required"))
             return
         }
 
@@ -77,9 +77,9 @@ public class WortiseInterstitialAd: NSObject, FlutterPlugin {
         result(nil)
     }
 
-    fileprivate func isAvailable(_ args: [String: Any]?, result: @escaping FlutterResult) {
+    private func isAvailable(_ args: [String: Any]?, result: @escaping FlutterResult) {
         guard let adUnitId = args?["adUnitId"] as? String else {
-            result(FlutterError(code: "INVALID_ARGUMENTS", message: "Ad unit ID is required", details: nil))
+            result(FlutterError.invalidArgument("Ad unit ID is required"))
             return
         }
 
@@ -88,9 +88,9 @@ public class WortiseInterstitialAd: NSObject, FlutterPlugin {
         result(interstitialAd?.isAvailable == true)
     }
 
-    fileprivate func isDestroyed(_ args: [String: Any]?, result: @escaping FlutterResult) {
+    private func isDestroyed(_ args: [String: Any]?, result: @escaping FlutterResult) {
         guard let adUnitId = args?["adUnitId"] as? String else {
-            result(FlutterError(code: "INVALID_ARGUMENTS", message: "Ad unit ID is required", details: nil))
+            result(FlutterError.invalidArgument("Ad unit ID is required"))
             return
         }
 
@@ -99,9 +99,9 @@ public class WortiseInterstitialAd: NSObject, FlutterPlugin {
         result(interstitialAd?.isDestroyed == true)
     }
 
-    fileprivate func loadAd(_ args: [String: Any]?, result: @escaping FlutterResult) {
+    private func loadAd(_ args: [String: Any]?, result: @escaping FlutterResult) {
         guard let adUnitId = args?["adUnitId"] as? String else {
-            result(FlutterError(code: "INVALID_ARGUMENTS", message: "Ad unit ID is required", details: nil))
+            result(FlutterError.invalidArgument("Ad unit ID is required"))
             return
         }
 
@@ -112,9 +112,9 @@ public class WortiseInterstitialAd: NSObject, FlutterPlugin {
         result(nil)
     }
 
-    fileprivate func showAd(_ args: [String: Any]?, result: @escaping FlutterResult) {
+    private func showAd(_ args: [String: Any]?, result: @escaping FlutterResult) {
         guard let adUnitId = args?["adUnitId"] as? String else {
-            result(FlutterError(code: "INVALID_ARGUMENTS", message: "Ad unit ID is required", details: nil))
+            result(FlutterError.invalidArgument("Ad unit ID is required"))
             return
         }
 
@@ -134,9 +134,9 @@ public class WortiseInterstitialAd: NSObject, FlutterPlugin {
     }
 }
 
-fileprivate class WortiseInterstitialDelegate: WAInterstitialDelegate {
+private class WortiseInterstitialDelegate: WAInterstitialDelegate {
 
-    fileprivate let channel: FlutterMethodChannel
+    private let channel: FlutterMethodChannel
 
 
     init(_ channel: FlutterMethodChannel) {
@@ -146,15 +146,15 @@ fileprivate class WortiseInterstitialDelegate: WAInterstitialDelegate {
     func didClick(interstitialAd: WAInterstitialAd) {
         channel.invokeMethod("clicked", arguments: nil)
     }
-    
+
     func didDismiss(interstitialAd: WAInterstitialAd) {
         channel.invokeMethod("dismissed", arguments: nil)
     }
-    
+
     func didFailToLoad(interstitialAd: WAInterstitialAd, error: WAAdError) {
         channel.invokeMethod("failedToLoad", arguments: error.toMap())
     }
-    
+
     func didFailToShow(interstitialAd: WAInterstitialAd, error: WAAdError) {
         channel.invokeMethod("failedToShow", arguments: error.toMap())
     }

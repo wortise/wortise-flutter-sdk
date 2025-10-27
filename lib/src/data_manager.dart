@@ -29,7 +29,11 @@ class DataManager {
       return null;
     }
 
-    return UserGender.values.firstWhere((g) => g.name == gender);
+    try {
+      return UserGender.values.firstWhere((g) => g.name == gender);
+    } catch (_) {
+      return null;
+    }
   }
 
 

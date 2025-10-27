@@ -4,13 +4,13 @@ import WortiseSDK
 
 public class WortiseRewardedAd: NSObject, FlutterPlugin {
 
-    public static let channelId = "\(WortiseFlutterPlugin.channelMain)/rewardedAd"
+    private static let channelId = "\(WortiseFlutterPlugin.channelMain)/rewardedAd"
 
 
-    fileprivate var binaryMessenger: FlutterBinaryMessenger
+    private var binaryMessenger: FlutterBinaryMessenger
 
-    fileprivate var instances = [String: WARewardedAd]()
-    
+    private var instances = [String: WARewardedAd]()
+
 
     public static func register(with registrar: FlutterPluginRegistrar) {
         let binaryMessenger = registrar.messenger()
@@ -21,12 +21,12 @@ public class WortiseRewardedAd: NSObject, FlutterPlugin {
 
         registrar.addMethodCallDelegate(instance, channel: channel)
     }
-    
-    
+
+
     init(_ binaryMessenger: FlutterBinaryMessenger) {
         self.binaryMessenger = binaryMessenger
     }
-    
+
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
         let args = call.arguments as? [String: Any]
 
@@ -52,7 +52,7 @@ public class WortiseRewardedAd: NSObject, FlutterPlugin {
     }
 
 
-    fileprivate func create(instance adUnitId: String) -> WARewardedAd {
+    private func create(instance adUnitId: String) -> WARewardedAd {
         let channelId = "\(WortiseRewardedAd.channelId)_\(adUnitId)"
 
         let channel = FlutterMethodChannel(name: channelId, binaryMessenger: binaryMessenger)
@@ -66,9 +66,9 @@ public class WortiseRewardedAd: NSObject, FlutterPlugin {
         return rewardedAd
     }
 
-    fileprivate func destroy(_ args: [String: Any]?, result: @escaping FlutterResult) {
+    private func destroy(_ args: [String: Any]?, result: @escaping FlutterResult) {
         guard let adUnitId = args?["adUnitId"] as? String else {
-            result(FlutterError(code: "INVALID_ARGUMENTS", message: "Ad unit ID is required", details: nil))
+            result(FlutterError.invalidArgument("Ad unit ID is required"))
             return
         }
 
@@ -77,9 +77,9 @@ public class WortiseRewardedAd: NSObject, FlutterPlugin {
         result(nil)
     }
 
-    fileprivate func isAvailable(_ args: [String: Any]?, result: @escaping FlutterResult) {
+    private func isAvailable(_ args: [String: Any]?, result: @escaping FlutterResult) {
         guard let adUnitId = args?["adUnitId"] as? String else {
-            result(FlutterError(code: "INVALID_ARGUMENTS", message: "Ad unit ID is required", details: nil))
+            result(FlutterError.invalidArgument("Ad unit ID is required"))
             return
         }
 
@@ -88,9 +88,9 @@ public class WortiseRewardedAd: NSObject, FlutterPlugin {
         result(rewardedAd?.isAvailable == true)
     }
 
-    fileprivate func isDestroyed(_ args: [String: Any]?, result: @escaping FlutterResult) {
+    private func isDestroyed(_ args: [String: Any]?, result: @escaping FlutterResult) {
         guard let adUnitId = args?["adUnitId"] as? String else {
-            result(FlutterError(code: "INVALID_ARGUMENTS", message: "Ad unit ID is required", details: nil))
+            result(FlutterError.invalidArgument("Ad unit ID is required"))
             return
         }
 
@@ -99,9 +99,9 @@ public class WortiseRewardedAd: NSObject, FlutterPlugin {
         result(rewardedAd?.isDestroyed == true)
     }
 
-    fileprivate func loadAd(_ args: [String: Any]?, result: @escaping FlutterResult) {
+    private func loadAd(_ args: [String: Any]?, result: @escaping FlutterResult) {
         guard let adUnitId = args?["adUnitId"] as? String else {
-            result(FlutterError(code: "INVALID_ARGUMENTS", message: "Ad unit ID is required", details: nil))
+            result(FlutterError.invalidArgument("Ad unit ID is required"))
             return
         }
 
@@ -112,9 +112,9 @@ public class WortiseRewardedAd: NSObject, FlutterPlugin {
         result(nil)
     }
 
-    fileprivate func showAd(_ args: [String: Any]?, result: @escaping FlutterResult) {
+    private func showAd(_ args: [String: Any]?, result: @escaping FlutterResult) {
         guard let adUnitId = args?["adUnitId"] as? String else {
-            result(FlutterError(code: "INVALID_ARGUMENTS", message: "Ad unit ID is required", details: nil))
+            result(FlutterError.invalidArgument("Ad unit ID is required"))
             return
         }
 
@@ -122,7 +122,7 @@ public class WortiseRewardedAd: NSObject, FlutterPlugin {
             result(false)
             return
         }
-        
+
         guard let viewController = WortiseFlutterPlugin.viewController else {
             result(false)
             return
@@ -134,9 +134,9 @@ public class WortiseRewardedAd: NSObject, FlutterPlugin {
     }
 }
 
-fileprivate class WortiseRewardedDelegate: WARewardedDelegate {
+private class WortiseRewardedDelegate: WARewardedDelegate {
 
-    fileprivate let channel: FlutterMethodChannel
+    private let channel: FlutterMethodChannel
 
 
     init(_ channel: FlutterMethodChannel) {
@@ -156,15 +156,15 @@ fileprivate class WortiseRewardedDelegate: WARewardedDelegate {
 
         channel.invokeMethod("completed", arguments: values)
     }
-    
+
     func didDismiss(rewardedAd: WARewardedAd) {
         channel.invokeMethod("dismissed", arguments: nil)
     }
-    
+
     func didFailToLoad(rewardedAd: WARewardedAd, error: WAAdError) {
         channel.invokeMethod("failedToLoad", arguments: error.toMap())
     }
-    
+
     func didFailToShow(rewardedAd: WARewardedAd, error: WAAdError) {
         channel.invokeMethod("failedToShow", arguments: error.toMap())
     }

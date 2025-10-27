@@ -5,13 +5,13 @@ import WortiseSDK
 
 public class WortiseGoogleNativeAd: NSObject {
 
-    fileprivate var adFactory: WortiseGoogleNativeAdFactory
+    private var adFactory: WortiseGoogleNativeAdFactory
 
-    fileprivate var adUnitId: String
+    private var adUnitId: String
 
-    fileprivate var channel: FlutterMethodChannel
+    private var channel: FlutterMethodChannel
 
-    fileprivate lazy var nativeAd: WAGoogleNativeAd = {
+    private lazy var nativeAd: WAGoogleNativeAd = {
         WAGoogleNativeAd(
             adUnitId:           adUnitId,
             rootViewController: WortiseFlutterPlugin.viewController,
@@ -19,7 +19,7 @@ public class WortiseGoogleNativeAd: NSObject {
         )
     }()
 
-    fileprivate(set) var nativeAdView: NativeAdView? = nil
+    private(set) var nativeAdView: NativeAdView?
 
 
     init(
@@ -34,7 +34,7 @@ public class WortiseGoogleNativeAd: NSObject {
 
         self.adFactory = adFactory
         self.adUnitId  = adUnitId
-        
+
         super.init()
     }
 
@@ -50,7 +50,7 @@ public class WortiseGoogleNativeAd: NSObject {
 }
 
 extension WortiseGoogleNativeAd: WAGoogleNativeDelegate {
-   
+
     public func didClick(nativeAd: WAGoogleNativeAd) {
         channel.invokeMethod("clicked", arguments: nil)
     }
@@ -58,7 +58,7 @@ extension WortiseGoogleNativeAd: WAGoogleNativeDelegate {
     public func didFailToLoad(nativeAd: WAGoogleNativeAd, error: WAAdError) {
         channel.invokeMethod("failedToLoad", arguments: error.toMap())
     }
-    
+
     public func didLoad(nativeAd: WAGoogleNativeAd, googleNativeAd: NativeAd) {
         nativeAdView = adFactory.create(nativeAd: googleNativeAd)
 

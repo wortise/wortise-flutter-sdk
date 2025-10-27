@@ -4,18 +4,19 @@ import WortiseSDK
 
 public class WortiseGoogleNativeAdManager: NSObject, WortiseAdWithView, FlutterPlugin {
 
-    fileprivate static var adFactories = [String: WortiseGoogleNativeAdFactory]()
+    private static var adFactories = [String: WortiseGoogleNativeAdFactory]()
 
 
-    public static let channelId = "\(WortiseFlutterPlugin.channelMain)/nativeAd"
-
-    fileprivate(set)
-    public static var instance: WortiseGoogleNativeAdManager? = nil
+    internal static let channelId = "\(WortiseFlutterPlugin.channelMain)/googleNativeAd"
 
 
-    fileprivate var binaryMessenger: FlutterBinaryMessenger
+    private(set)
+    public static var instance: WortiseGoogleNativeAdManager?
 
-    fileprivate var instances = [String: WortiseGoogleNativeAd]()
+
+    private var binaryMessenger: FlutterBinaryMessenger
+
+    private var instances = [String: WortiseGoogleNativeAd]()
 
 
     public static func register(with registrar: FlutterPluginRegistrar) {
@@ -43,8 +44,8 @@ public class WortiseGoogleNativeAdManager: NSObject, WortiseAdWithView, FlutterP
         self.binaryMessenger = binaryMessenger
     }
 
-    func get(platformView adId: String) -> FlutterPlatformView? {
-        guard let nativeAdView = instances[adId]?.nativeAdView else {
+    func get(platformView instanceId: String) -> FlutterPlatformView? {
+        guard let nativeAdView = instances[instanceId]?.nativeAdView else {
             return nil
         }
 
@@ -67,58 +68,58 @@ public class WortiseGoogleNativeAdManager: NSObject, WortiseAdWithView, FlutterP
     }
 
 
-    fileprivate func clear(_ adId: String) {
-        instances.removeValue(forKey: adId)
+    private func clear(_ instanceId: String) {
+        instances.removeValue(forKey: instanceId)
     }
 
-    fileprivate func create(
-        instance adId: String,
-        adUnitId:      String,
-        adFactory:     WortiseGoogleNativeAdFactory
+    private func create(
+        instance id: String,
+        adUnitId:    String,
+        adFactory:   WortiseGoogleNativeAdFactory
     ) -> WortiseGoogleNativeAd {
 
-        clear(adId)
+        clear(id)
 
         let nativeAd = WortiseGoogleNativeAd(
-            viewIdentifier:  adId,
+            viewIdentifier:  id,
             adUnitId:        adUnitId,
             adFactory:       adFactory,
             binaryMessenger: binaryMessenger
         )
 
-        instances[adId] = nativeAd
+        instances[id] = nativeAd
 
         return nativeAd
     }
 
-    fileprivate func destroy(_ args: [String: Any]?, result: @escaping FlutterResult) {
-        guard let adId = args?["adId"] as? String else {
-            result(FlutterError(code: "INVALID_ARGUMENTS", message: "Ad ID is required", details: nil))
+    private func destroy(_ args: [String: Any]?, result: @escaping FlutterResult) {
+        guard let instanceId = args?["instanceId"] as? String else {
+            result(FlutterError.invalidArgument("Ad ID is required"))
             return
         }
 
-        clear(adId)
+        clear(instanceId)
 
         result(nil)
     }
 
-    fileprivate func load(_ args: [String: Any]?, result: @escaping FlutterResult) {
+    private func load(_ args: [String: Any]?, result: @escaping FlutterResult) {
         guard
-            let adId      = args?["adId"]      as? String,
-            let adUnitId  = args?["adUnitId"]  as? String,
-            let factoryId = args?["factoryId"] as? String
+            let adUnitId   = args?["adUnitId"]   as? String,
+            let factoryId  = args?["factoryId"]  as? String,
+            let instanceId = args?["instanceId"] as? String
         else {
-            result(FlutterError(code: "INVALID_ARGUMENTS", message: "Required arguments are missing", details: nil))
+            result(FlutterError.invalidArgument("Required arguments are missing"))
             return
         }
-        
+
         guard let adFactory = WortiseGoogleNativeAdManager.adFactories[factoryId] else {
-            result(FlutterError(code: "INVALID_ARGUMENTS", message: "Can't find NativeAdFactory with id: \(factoryId)", details: nil))
+            result(FlutterError.invalidArgument("Can't find NativeAdFactory with id: \(factoryId)"))
             return
         }
 
         let nativeAd = create(
-            instance:  adId,
+            instance:  instanceId,
             adUnitId:  adUnitId,
             adFactory: adFactory
         )

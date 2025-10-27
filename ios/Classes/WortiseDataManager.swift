@@ -3,8 +3,8 @@ import UIKit
 
 public class WortiseDataManager: NSObject, FlutterPlugin {
 
-    public static let channelId = "\(WortiseFlutterPlugin.channelMain)/dataManager"
-    
+    private static let channelId = "\(WortiseFlutterPlugin.channelMain)/dataManager"
+
 
     public static func register(with registrar: FlutterPluginRegistrar) {
         let channel = FlutterMethodChannel(name: channelId, binaryMessenger: registrar.messenger())

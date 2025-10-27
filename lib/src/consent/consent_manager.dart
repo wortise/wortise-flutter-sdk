@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/services.dart';
 
-import 'wortise_sdk.dart';
+import '../wortise_sdk.dart';
 
 class ConsentManager {
 

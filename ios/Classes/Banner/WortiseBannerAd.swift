@@ -4,7 +4,7 @@ import WortiseSDK
 
 public class WortiseBannerAdViewFactory: NSObject, FlutterPlatformViewFactory {
 
-    public static let channelId = "\(WortiseFlutterPlugin.channelMain)/bannerAd"
+    internal static let channelId = "\(WortiseFlutterPlugin.channelMain)/bannerAd"
 
 
     private var messenger: FlutterBinaryMessenger
@@ -38,9 +38,9 @@ public class WortiseBannerAdViewFactory: NSObject, FlutterPlatformViewFactory {
 
 public class WortiseBannerAdView: NSObject, FlutterPlatformView {
 
-    fileprivate var bannerAd: WABannerAd
+    private var bannerAd: WABannerAd
 
-    fileprivate var channel: FlutterMethodChannel
+    private var channel: FlutterMethodChannel
 
 
     init(
@@ -76,7 +76,7 @@ public class WortiseBannerAdView: NSObject, FlutterPlatformView {
     }
 
 
-    fileprivate func getAdSize(_ args: [String: Any]) -> WAAdSize {
+    private func getAdSize(_ args: [String: Any]) -> WAAdSize {
 
         let params = args["adSize"] as! [String: Any]
 
@@ -97,7 +97,7 @@ public class WortiseBannerAdView: NSObject, FlutterPlatformView {
         }
     }
 
-    fileprivate func getAutoRefreshTime(_ args: [String: Any]) -> Double? {
+    private func getAutoRefreshTime(_ args: [String: Any]) -> Double? {
         guard let time = args["autoRefreshTime"] as? Int else {
             return nil
         }
@@ -111,11 +111,11 @@ extension WortiseBannerAdView: WABannerDelegate {
     public func didClick(bannerAd: WABannerAd) {
         channel.invokeMethod("clicked", arguments: nil)
     }
-    
+
     public func didFailToLoad(bannerAd: WABannerAd, error: WAAdError) {
         channel.invokeMethod("failedToLoad", arguments: error.toMap())
     }
-    
+
     public func didImpress(bannerAd: WABannerAd) {
         channel.invokeMethod("impression", arguments: nil)
     }

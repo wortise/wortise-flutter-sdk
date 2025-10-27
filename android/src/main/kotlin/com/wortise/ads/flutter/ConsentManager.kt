@@ -84,6 +84,6 @@ class ConsentManager : ActivityAware, FlutterPlugin, MethodCallHandler {
 
 
     companion object {
-        const val CHANNEL_ID = "${CHANNEL_MAIN}/consentManager"
+        private const val CHANNEL_ID = "${CHANNEL_MAIN}/consentManager"
     }
 }

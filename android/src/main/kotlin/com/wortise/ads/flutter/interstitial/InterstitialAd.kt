@@ -103,7 +103,9 @@ class InterstitialAd : ActivityAware, FlutterPlugin, MethodCallHandler {
 
         requireNotNull(adUnitId)
 
-        result.success(instances[adUnitId]?.isAvailable == true)
+        val isAvailable = instances[adUnitId]?.isAvailable == true
+
+        result.success(isAvailable)
     }
 
     private fun isDestroyed(call: MethodCall, result: Result) {
@@ -111,7 +113,9 @@ class InterstitialAd : ActivityAware, FlutterPlugin, MethodCallHandler {
 
         requireNotNull(adUnitId)
 
-        result.success(instances[adUnitId]?.isDestroyed == true)
+        val isDestroyed = instances[adUnitId]?.isDestroyed == true
+
+        result.success(isDestroyed)
     }
 
     private fun loadAd(call: MethodCall, result: Result) {
@@ -185,6 +189,6 @@ class InterstitialAd : ActivityAware, FlutterPlugin, MethodCallHandler {
 
 
     companion object {
-        const val CHANNEL_ID = "${CHANNEL_MAIN}/interstitialAd"
+        private const val CHANNEL_ID = "${CHANNEL_MAIN}/interstitialAd"
     }
 }

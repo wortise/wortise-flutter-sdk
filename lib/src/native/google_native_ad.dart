@@ -2,8 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/services.dart';
 
-import 'base_ad.dart';
-import 'wortise_sdk.dart';
+import '../base_ad.dart';
+import '../wortise_sdk.dart';
 
 enum GoogleNativeAdEvent {
   CLICKED,
@@ -15,19 +15,26 @@ enum GoogleNativeAdEvent {
 
 class GoogleNativeAd extends BaseAd {
 
-  static const CHANNEL_ID = "${WortiseSdk.CHANNEL_MAIN}/nativeAd";
+  static const CHANNEL_ID = "${WortiseSdk.CHANNEL_MAIN}/googleNativeAd";
 
   static const MethodChannel _channel = const MethodChannel(CHANNEL_ID);
 
 
+  static int _currentId = 1;
+
+
   MethodChannel? _adChannel;
+
+  final String adId = (_currentId++).toString();
+
+  final String adUnitId;
 
   final String factoryId;
 
   final void Function(GoogleNativeAdEvent, dynamic)? listener;
 
 
-  GoogleNativeAd(String adUnitId, this.factoryId, this.listener) : super(adUnitId: adUnitId) {    
+  GoogleNativeAd(this.adUnitId, this.factoryId, this.listener) {    
     if (listener != null) {
       _adChannel = MethodChannel('${CHANNEL_ID}_$adId');
       _adChannel?.setMethodCallHandler(_handleEvent);
@@ -36,7 +43,7 @@ class GoogleNativeAd extends BaseAd {
 
   Future<void> destroy() async {
     Map<String, dynamic> values = {
-      'adId': adId
+      'instanceId': adId
     };
 
     await _channel.invokeMethod('destroy', values);
@@ -44,9 +51,9 @@ class GoogleNativeAd extends BaseAd {
 
   Future<void> load() async {
     Map<String, dynamic> values = {
-      'adId':      adId,
-      'adUnitId':  adUnitId,
-      'factoryId': factoryId
+      'adUnitId':   adUnitId,
+      'factoryId':  factoryId,
+      'instanceId': adId
     };
 
     await _channel.invokeMethod('load', values);

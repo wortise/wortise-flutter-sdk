@@ -31,7 +31,11 @@ class AdSettings {
       return null;
     }
 
-    return AdContentRating.values.firstWhere((r) => r.name == rating);
+    try {
+      return AdContentRating.values.firstWhere((r) => r.name == rating);
+    } catch (_) {
+      return null;
+    }
   }
 
   static Future<String?> get userId async {

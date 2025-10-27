@@ -2,11 +2,10 @@ import 'dart:async';
 
 import 'package:flutter/services.dart';
 
-import 'wortise_sdk.dart';
+import '../wortise_sdk.dart';
 
-enum RewardedAdEvent {
+enum InterstitialAdEvent {
   CLICKED,
-  COMPLETED,
   DISMISSED,
   FAILED_TO_LOAD,
   FAILED_TO_SHOW,
@@ -16,9 +15,9 @@ enum RewardedAdEvent {
   SHOWN,
 }
 
-class RewardedAd {
+class InterstitialAd {
 
-  static const CHANNEL_ID = "${WortiseSdk.CHANNEL_MAIN}/rewardedAd";
+  static const CHANNEL_ID = "${WortiseSdk.CHANNEL_MAIN}/interstitialAd";
 
   static const MethodChannel _channel = const MethodChannel(CHANNEL_ID);
 
@@ -27,12 +26,12 @@ class RewardedAd {
 
   final String adUnitId;
 
-  final void Function(RewardedAdEvent, dynamic)? listener;
+  final void Function(InterstitialAdEvent, dynamic)? listener;
 
   final bool reloadOnDismissed;
 
 
-  RewardedAd(this.adUnitId, this.listener, {this.reloadOnDismissed = false}) {
+  InterstitialAd(this.adUnitId, this.listener, {this.reloadOnDismissed = false}) {
     if (listener != null) {
       _adChannel = MethodChannel('${CHANNEL_ID}_$adUnitId');
       _adChannel?.setMethodCallHandler(_handleEvent);
@@ -83,15 +82,11 @@ class RewardedAd {
   Future<dynamic> _handleEvent(MethodCall call) {
     switch (call.method) {
     case "clicked":
-      listener?.call(RewardedAdEvent.CLICKED, call.arguments);
-      break;
-
-    case "completed":
-      listener?.call(RewardedAdEvent.COMPLETED, call.arguments);
+      listener?.call(InterstitialAdEvent.CLICKED, call.arguments);
       break;
 
     case "dismissed":
-      listener?.call(RewardedAdEvent.DISMISSED, call.arguments);
+      listener?.call(InterstitialAdEvent.DISMISSED, call.arguments);
 
       if (reloadOnDismissed) {
         loadAd();
@@ -100,27 +95,27 @@ class RewardedAd {
       break;
 
     case "failedToLoad":
-      listener?.call(RewardedAdEvent.FAILED_TO_LOAD, call.arguments);
+      listener?.call(InterstitialAdEvent.FAILED_TO_LOAD, call.arguments);
       break;
 
     case "failedToShow":
-      listener?.call(RewardedAdEvent.FAILED_TO_SHOW, call.arguments);
+      listener?.call(InterstitialAdEvent.FAILED_TO_SHOW, call.arguments);
       break;
 
     case "impression":
-      listener?.call(RewardedAdEvent.IMPRESSION, call.arguments);
+      listener?.call(InterstitialAdEvent.IMPRESSION, call.arguments);
       break;
 
     case "loaded":
-      listener?.call(RewardedAdEvent.LOADED, call.arguments);
+      listener?.call(InterstitialAdEvent.LOADED, call.arguments);
       break;
     
     case "revenuePaid":
-      listener?.call(RewardedAdEvent.REVENUE_PAID, call.arguments);
+      listener?.call(InterstitialAdEvent.REVENUE_PAID, call.arguments);
       break;
 
     case "shown":
-      listener?.call(RewardedAdEvent.SHOWN, call.arguments);
+      listener?.call(InterstitialAdEvent.SHOWN, call.arguments);
       break;
     }
 
