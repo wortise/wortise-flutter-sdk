@@ -2,7 +2,7 @@ group 'com.wortise.ads.flutter'
 version '1.7.2'
 
 buildscript {
-    ext.kotlin_version = '1.8.0'
+    ext.kotlin_version = '2.2.21'
 
     repositories {
         google()
