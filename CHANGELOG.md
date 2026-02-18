@@ -1,3 +1,12 @@
+## 1.7.3
+
+* Various improvements and fixes
+
+## 1.7.2
+
+* Wortise Android SDK updated to version 1.7.2
+* Wortise iOS SDK updated to version 1.7.1
+
 ## 1.7.1
 
 * Wortise Android SDK updated to version 1.7.1
