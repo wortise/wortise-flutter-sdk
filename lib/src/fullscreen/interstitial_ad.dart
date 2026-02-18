@@ -31,11 +31,9 @@ class InterstitialAd {
   final bool reloadOnDismissed;
 
 
-  InterstitialAd(this.adUnitId, this.listener, {this.reloadOnDismissed = false}) {
-    if (listener != null) {
-      _adChannel = MethodChannel('${CHANNEL_ID}_$adUnitId');
-      _adChannel?.setMethodCallHandler(_handleEvent);
-    }
+  InterstitialAd(this.adUnitId, {this.listener, this.reloadOnDismissed = false}) {
+    _adChannel = MethodChannel('${CHANNEL_ID}_$adUnitId');
+    _adChannel?.setMethodCallHandler(_handleEvent);
   }
 
   Future<bool> get isAvailable async {

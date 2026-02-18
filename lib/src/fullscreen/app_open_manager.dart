@@ -1,10 +1,13 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'app_open_ad.dart';
+import 'wortise_sdk.dart';
 
-class AppOpenManager extends WidgetsBindingObserver {
+class AppOpenManager {
+
+  static const _channel = MethodChannel('${WortiseSdk.CHANNEL_MAIN}/lifecycle');
 
   final AppOpenAd appOpenAd;
 
@@ -12,11 +15,13 @@ class AppOpenManager extends WidgetsBindingObserver {
   AppOpenManager(this.appOpenAd);
 
   AppOpenManager.register(this.appOpenAd) {
-    WidgetsBinding.instance.addObserver(this);
+    _channel.setMethodCallHandler(_handleLifecycleEvent);
   }
 
 
   void destroy() {
+    _channel.setMethodCallHandler(null);
+
     appOpenAd.destroy();
   }
 
@@ -25,10 +30,9 @@ class AppOpenManager extends WidgetsBindingObserver {
   }
 
 
-  @override
-  Future<void> didChangeAppLifecycleState(AppLifecycleState state) async {
-    if (state == AppLifecycleState.resumed) {
-      appOpenAd.tryToShowAd();
+  Future<dynamic> _handleLifecycleEvent(MethodCall call) async {
+    if (call.method == 'foreground') {
+      appOpenAd.showAd();
     }
   }
 }

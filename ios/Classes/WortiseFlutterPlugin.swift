@@ -21,6 +21,7 @@ public class WortiseFlutterPlugin: NSObject, FlutterPlugin {
         registrar.addMethodCallDelegate(instance, channel: channel)
 
         WortiseAdSettings           .register(with: registrar)
+        WortiseAppLifecycleManager  .register(with: registrar)
         WortiseAppOpenAd            .register(with: registrar)
         WortiseConsentManager       .register(with: registrar)
         WortiseDataManager          .register(with: registrar)

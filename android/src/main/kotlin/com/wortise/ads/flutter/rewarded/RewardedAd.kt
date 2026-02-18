@@ -76,8 +76,8 @@ class RewardedAd : ActivityAware, FlutterPlugin, MethodCallHandler {
     }
 
 
-    private fun createInstance(adUnitId: String): RewardedAd {
-        val activity = requireNotNull(activity)
+    private fun createInstance(adUnitId: String): RewardedAd? {
+        val activity = activity ?: return null
 
         val adChannel = MethodChannel(binding.binaryMessenger, "${CHANNEL_ID}_$adUnitId")
 
@@ -90,9 +90,10 @@ class RewardedAd : ActivityAware, FlutterPlugin, MethodCallHandler {
     }
 
     private fun destroy(call: MethodCall, result: Result) {
-        val adUnitId = call.argument<String>("adUnitId")
-
-        requireNotNull(adUnitId)
+        val adUnitId = call.argument<String>("adUnitId") ?: run {
+            result.error("INVALID_ARGUMENT", "adUnitId is required", null)
+            return
+        }
 
         instances.remove(adUnitId)?.destroy()
 
@@ -100,9 +101,10 @@ class RewardedAd : ActivityAware, FlutterPlugin, MethodCallHandler {
     }
 
     private fun isAvailable(call: MethodCall, result: Result) {
-        val adUnitId = call.argument<String>("adUnitId")
-
-        requireNotNull(adUnitId)
+        val adUnitId = call.argument<String>("adUnitId") ?: run {
+            result.error("INVALID_ARGUMENT", "adUnitId is required", null)
+            return
+        }
 
         val isAvailable = instances[adUnitId]?.isAvailable == true
 
@@ -110,9 +112,10 @@ class RewardedAd : ActivityAware, FlutterPlugin, MethodCallHandler {
     }
 
     private fun isDestroyed(call: MethodCall, result: Result) {
-        val adUnitId = call.argument<String>("adUnitId")
-
-        requireNotNull(adUnitId)
+        val adUnitId = call.argument<String>("adUnitId") ?: run {
+            result.error("INVALID_ARGUMENT", "adUnitId is required", null)
+            return
+        }
 
         val isDestroyed = instances[adUnitId]?.isDestroyed == true
 
@@ -120,11 +123,15 @@ class RewardedAd : ActivityAware, FlutterPlugin, MethodCallHandler {
     }
 
     private fun loadAd(call: MethodCall, result: Result) {
-        val adUnitId = call.argument<String>("adUnitId")
+        val adUnitId = call.argument<String>("adUnitId") ?: run {
+            result.error("INVALID_ARGUMENT", "adUnitId is required", null)
+            return
+        }
 
-        requireNotNull(adUnitId)
-
-        val rewardedAd = instances[adUnitId] ?: createInstance(adUnitId)
+        val rewardedAd = instances[adUnitId] ?: createInstance(adUnitId) ?: run {
+            result.error("ACTIVITY_NOT_AVAILABLE", "Activity is not available", null)
+            return
+        }
 
         rewardedAd.loadAd()
 
@@ -132,9 +139,10 @@ class RewardedAd : ActivityAware, FlutterPlugin, MethodCallHandler {
     }
 
     private fun showAd(call: MethodCall, result: Result) {
-        val adUnitId = call.argument<String>("adUnitId")
-
-        requireNotNull(adUnitId)
+        val adUnitId = call.argument<String>("adUnitId") ?: run {
+            result.error("INVALID_ARGUMENT", "adUnitId is required", null)
+            return
+        }
 
         val rewardedAd = instances[adUnitId]
 

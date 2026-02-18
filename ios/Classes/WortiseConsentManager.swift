@@ -42,13 +42,23 @@ public class WortiseConsentManager: NSObject, FlutterPlugin {
 
 
     private func request(_ args: [String: Any]?, result: @escaping FlutterResult) {
-        WAConsentManager.shared.request(WortiseFlutterPlugin.viewController!) {
+        guard let viewController = WortiseFlutterPlugin.viewController else {
+            result(false)
+            return
+        }
+
+        WAConsentManager.shared.request(viewController) {
             result($0)
         }
     }
 
     private func requestIfRequired(_ args: [String: Any]?, result: @escaping FlutterResult) {
-        WAConsentManager.shared.request(ifRequired: WortiseFlutterPlugin.viewController!) {
+        guard let viewController = WortiseFlutterPlugin.viewController else {
+            result(false)
+            return
+        }
+
+        WAConsentManager.shared.request(ifRequired: viewController) {
             result($0)
         }
     }

@@ -124,6 +124,10 @@ public class WortiseAppOpenAd: NSObject, FlutterPlugin {
 
         let appOpenAd = instances[adUnitId] ?? create(instance: adUnitId)
 
+        if let autoReload = args?["autoReload"] as? Bool {
+            appOpenAd.autoReload = autoReload
+        }
+
         appOpenAd.loadAd()
 
         result(nil)

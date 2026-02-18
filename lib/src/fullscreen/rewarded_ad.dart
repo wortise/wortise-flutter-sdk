@@ -32,11 +32,9 @@ class RewardedAd {
   final bool reloadOnDismissed;
 
 
-  RewardedAd(this.adUnitId, this.listener, {this.reloadOnDismissed = false}) {
-    if (listener != null) {
-      _adChannel = MethodChannel('${CHANNEL_ID}_$adUnitId');
-      _adChannel?.setMethodCallHandler(_handleEvent);
-    }
+  RewardedAd(this.adUnitId, {this.listener, this.reloadOnDismissed = false}) {
+    _adChannel = MethodChannel('${CHANNEL_ID}_$adUnitId');
+    _adChannel?.setMethodCallHandler(_handleEvent);
   }
 
   Future<bool> get isAvailable async {

@@ -51,9 +51,10 @@ class DataManager : FlutterPlugin, MethodCallHandler {
 
 
     private fun addEmail(call: MethodCall, result: Result) {
-        val email = call.argument<String>("email")
-
-        requireNotNull(email)
+        val email = call.argument<String>("email") ?: run {
+            result.error("INVALID_ARGUMENT", "email is required", null)
+            return
+        }
 
         DataManager.addEmail(context, email)
 
@@ -69,9 +70,10 @@ class DataManager : FlutterPlugin, MethodCallHandler {
     }
 
     private fun setAge(call: MethodCall, result: Result) {
-        val age = call.argument<Int>("age")
-
-        requireNotNull(age)
+        val age = call.argument<Int>("age") ?: run {
+            result.error("INVALID_ARGUMENT", "age is required", null)
+            return
+        }
 
         DataManager.setAge(context, age)
 
@@ -89,7 +91,7 @@ class DataManager : FlutterPlugin, MethodCallHandler {
     private fun setGender(call: MethodCall, result: Result) {
         val name = call.argument<String>("gender")
 
-        val gender = name?.toUpperCase()?.let { UserGender.valueOf(it) }
+        val gender = name?.uppercase()?.let { UserGender.valueOf(it) }
 
         DataManager.setGender(context, gender)
 

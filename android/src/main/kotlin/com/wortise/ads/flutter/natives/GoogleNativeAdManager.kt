@@ -60,9 +60,10 @@ class GoogleNativeAdManager : AdWithView, FlutterPlugin, MethodCallHandler {
     }
 
     private fun destroy(call: MethodCall, result: Result) {
-        val instanceId = call.argument<String>("instanceId")
-
-        requireNotNull(instanceId)
+        val instanceId = call.argument<String>("instanceId") ?: run {
+            result.error("INVALID_ARGUMENT", "instanceId is required", null)
+            return
+        }
 
         clear(instanceId)
 
@@ -70,13 +71,20 @@ class GoogleNativeAdManager : AdWithView, FlutterPlugin, MethodCallHandler {
     }
 
     private fun load(call: MethodCall, result: Result) {
-        val adUnitId   = call.argument<String>("adUnitId")
-        val factoryId  = call.argument<String>("factoryId")
-        val instanceId = call.argument<String>("instanceId")
+        val adUnitId = call.argument<String>("adUnitId") ?: run {
+            result.error("INVALID_ARGUMENT", "adUnitId is required", null)
+            return
+        }
 
-        requireNotNull(adUnitId)
-        requireNotNull(factoryId)
-        requireNotNull(instanceId)
+        val factoryId = call.argument<String>("factoryId") ?: run {
+            result.error("INVALID_ARGUMENT", "factoryId is required", null)
+            return
+        }
+
+        val instanceId = call.argument<String>("instanceId") ?: run {
+            result.error("INVALID_ARGUMENT", "instanceId is required", null)
+            return
+        }
 
         val adFactory = adFactories[factoryId]
 

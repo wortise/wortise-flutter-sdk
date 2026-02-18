@@ -61,5 +61,7 @@ android {
 
 dependencies {
     api 'com.wortise:android-sdk:1.8.0-alpha04'
+
+    implementation 'androidx.lifecycle:lifecycle-process:2.6.2'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
 }
