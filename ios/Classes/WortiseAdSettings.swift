@@ -64,7 +64,7 @@ public class WortiseAdSettings: NSObject, FlutterPlugin {
         result(nil)
     }
 
-    fileprivate func setMaxAdContentRating(_ args: [String: Any]?, result: @escaping FlutterResult) {
+    private func setMaxAdContentRating(_ args: [String: Any]?, result: @escaping FlutterResult) {
         let name = args?["rating"] as? String
 
         WAAdSettings.maxAdContentRating = name != nil ? WAAdContentRating.from(name: name!) : nil
