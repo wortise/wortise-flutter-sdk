@@ -59,7 +59,7 @@ class GoogleNativeAd extends BaseAd {
       listener?.call(GoogleNativeAdEvent.CLICKED, call.arguments);
       break;
 
-    case "failed":
+    case "failedToLoad":
       listener?.call(GoogleNativeAdEvent.FAILED, call.arguments);
       break;
 

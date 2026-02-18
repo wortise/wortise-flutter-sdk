@@ -26,11 +26,11 @@ public class WortiseGoogleNativeAd: NSObject {
         viewIdentifier  viewId:    String,
         adUnitId:                  String,
         adFactory:                 WortiseGoogleNativeAdFactory,
-        binaryMessenger messenger: FlutterBinaryMessenger?
+        binaryMessenger messenger: FlutterBinaryMessenger
     ) {
         let channelId = "\(WortiseGoogleNativeAdManager.channelId)_\(viewId)"
 
-        channel = FlutterMethodChannel(name: channelId, binaryMessenger: messenger!)
+        channel = FlutterMethodChannel(name: channelId, binaryMessenger: messenger)
 
         self.adFactory = adFactory
         self.adUnitId  = adUnitId
@@ -65,7 +65,7 @@ extension WortiseGoogleNativeAd: WAGoogleNativeDelegate {
         channel.invokeMethod("loaded", arguments: nil)
     }
 
-    public func didPayRevenue(nativeAd: WAGoogleNativeAd, data: WARevenueData) {
+    public func didPay(revenue nativeAd: WAGoogleNativeAd, data: WARevenueData) {
         channel.invokeMethod("revenuePaid", arguments: data.toMap())
     }
 

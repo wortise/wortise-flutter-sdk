@@ -17,9 +17,9 @@ class DataManager {
   }
 
   static Future<List<String>> get emails async {
-    List<dynamic> list = await _channel.invokeMethod('getEmails');
+    List<dynamic>? list = await _channel.invokeMethod('getEmails');
 
-    return list.cast<String>();
+    return list?.cast<String>() ?? [];
   }
 
   static Future<UserGender?> get gender async {
@@ -29,7 +29,11 @@ class DataManager {
       return null;
     }
 
-    return UserGender.values.firstWhere((g) => g.name == gender);
+    try {
+      return UserGender.values.firstWhere((g) => g.name == gender);
+    } catch (_) {
+      return null;
+    }
   }
 
 

@@ -57,15 +57,16 @@ class AdSettings : FlutterPlugin, MethodCallHandler {
     private fun getMaxAdContentRating(call: MethodCall, result: Result) {
         val rating = AdSettings.getMaxAdContentRating(context)
             ?.name
-            ?.toLowerCase()
+            ?.lowercase()
 
         result.success(rating)
     }
 
     private fun setChildDirected(call: MethodCall, result: Result) {
-        val enabled = call.argument<Boolean>("enabled")
-
-        requireNotNull(enabled)
+        val enabled = call.argument<Boolean>("enabled") ?: run {
+            result.error("INVALID_ARGUMENT", "enabled is required", null)
+            return
+        }
 
         AdSettings.setChildDirected(context, enabled)
 
@@ -75,7 +76,7 @@ class AdSettings : FlutterPlugin, MethodCallHandler {
     private fun setMaxAdContentRating(call: MethodCall, result: Result) {
         val name = call.argument<String>("rating")
 
-        val rating = name?.toUpperCase()?.let { AdContentRating.valueOf(it) }
+        val rating = name?.uppercase()?.let { AdContentRating.valueOf(it) }
 
         AdSettings.setMaxAdContentRating(context, rating)
 
@@ -83,9 +84,10 @@ class AdSettings : FlutterPlugin, MethodCallHandler {
     }
 
     private fun setTestEnabled(call: MethodCall, result: Result) {
-        val enabled = requireNotNull(
-            call.argument<Boolean>("enabled")
-        )
+        val enabled = call.argument<Boolean>("enabled") ?: run {
+            result.error("INVALID_ARGUMENT", "enabled is required", null)
+            return
+        }
 
         AdSettings.testEnabled = enabled
 

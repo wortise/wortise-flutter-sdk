@@ -68,7 +68,7 @@ public class WortiseGoogleNativeAdManager: NSObject, WortiseAdWithView, FlutterP
 
 
     fileprivate func clear(_ adId: String) {
-        instances.removeValue(forKey: adId)
+        instances.removeValue(forKey: adId)?.destroy()
     }
 
     fileprivate func create(

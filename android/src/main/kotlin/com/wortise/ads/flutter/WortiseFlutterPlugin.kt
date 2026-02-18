@@ -23,6 +23,7 @@ class WortiseFlutterPlugin : ActivityAware, FlutterPlugin, MethodCallHandler {
 
     private val plugins = listOf<FlutterPlugin>(
         AdSettings           (),
+        AppLifecycleManager  (),
         AppOpenAd            (),
         ConsentManager       (),
         DataManager          (),
@@ -99,7 +100,10 @@ class WortiseFlutterPlugin : ActivityAware, FlutterPlugin, MethodCallHandler {
     private fun initialize(call: MethodCall, result: Result) {
         val assetKey = call.argument<String>("assetKey")
 
-        require(!assetKey.isNullOrEmpty())
+        if (assetKey.isNullOrEmpty()) {
+            result.error("INVALID_ARGUMENT", "assetKey is required", null)
+            return
+        }
 
         WortiseSdk.initialize(context, assetKey) {
             result.success(null)

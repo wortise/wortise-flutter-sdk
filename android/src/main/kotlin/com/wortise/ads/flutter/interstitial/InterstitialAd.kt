@@ -75,8 +75,8 @@ class InterstitialAd : ActivityAware, FlutterPlugin, MethodCallHandler {
     }
 
 
-    private fun createInstance(adUnitId: String): InterstitialAd {
-        val activity = requireNotNull(activity)
+    private fun createInstance(adUnitId: String): InterstitialAd? {
+        val activity = activity ?: return null
 
         val adChannel = MethodChannel(binding.binaryMessenger, "${CHANNEL_ID}_$adUnitId")
 
@@ -89,9 +89,10 @@ class InterstitialAd : ActivityAware, FlutterPlugin, MethodCallHandler {
     }
 
     private fun destroy(call: MethodCall, result: Result) {
-        val adUnitId = call.argument<String>("adUnitId")
-
-        requireNotNull(adUnitId)
+        val adUnitId = call.argument<String>("adUnitId") ?: run {
+            result.error("INVALID_ARGUMENT", "adUnitId is required", null)
+            return
+        }
 
         instances.remove(adUnitId)?.destroy()
 
@@ -99,27 +100,33 @@ class InterstitialAd : ActivityAware, FlutterPlugin, MethodCallHandler {
     }
 
     private fun isAvailable(call: MethodCall, result: Result) {
-        val adUnitId = call.argument<String>("adUnitId")
-
-        requireNotNull(adUnitId)
+        val adUnitId = call.argument<String>("adUnitId") ?: run {
+            result.error("INVALID_ARGUMENT", "adUnitId is required", null)
+            return
+        }
 
         result.success(instances[adUnitId]?.isAvailable == true)
     }
 
     private fun isDestroyed(call: MethodCall, result: Result) {
-        val adUnitId = call.argument<String>("adUnitId")
-
-        requireNotNull(adUnitId)
+        val adUnitId = call.argument<String>("adUnitId") ?: run {
+            result.error("INVALID_ARGUMENT", "adUnitId is required", null)
+            return
+        }
 
         result.success(instances[adUnitId]?.isDestroyed == true)
     }
 
     private fun loadAd(call: MethodCall, result: Result) {
-        val adUnitId = call.argument<String>("adUnitId")
+        val adUnitId = call.argument<String>("adUnitId") ?: run {
+            result.error("INVALID_ARGUMENT", "adUnitId is required", null)
+            return
+        }
 
-        requireNotNull(adUnitId)
-
-        val interstitialAd = instances[adUnitId] ?: createInstance(adUnitId)
+        val interstitialAd = instances[adUnitId] ?: createInstance(adUnitId) ?: run {
+            result.error("ACTIVITY_NOT_AVAILABLE", "Activity is not available", null)
+            return
+        }
 
         interstitialAd.loadAd()
 
@@ -127,9 +134,10 @@ class InterstitialAd : ActivityAware, FlutterPlugin, MethodCallHandler {
     }
 
     private fun showAd(call: MethodCall, result: Result) {
-        val adUnitId = call.argument<String>("adUnitId")
-
-        requireNotNull(adUnitId)
+        val adUnitId = call.argument<String>("adUnitId") ?: run {
+            result.error("INVALID_ARGUMENT", "adUnitId is required", null)
+            return
+        }
 
         val interstitialAd = instances[adUnitId]
 

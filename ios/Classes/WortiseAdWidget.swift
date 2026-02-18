@@ -21,9 +21,10 @@ public class WortiseAdWidgetFactory: NSObject, FlutterPlatformViewFactory {
         arguments      args:   Any?
     ) -> FlutterPlatformView {
 
-        let values = args as! [String: Any]
-
-        let adId = values["adId"] as! String
+        guard let values = args as? [String: Any],
+              let adId = values["adId"] as? String else {
+            return WortiseErrorTextView("Invalid arguments for ad widget")
+        }
 
         return plugin.get(platformView: adId) ?? WortiseErrorTextView("No ad is available for id \(adId)")
     }

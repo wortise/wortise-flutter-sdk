@@ -79,8 +79,8 @@ class AppOpenAd : ActivityAware, FlutterPlugin, MethodCallHandler {
     }
 
 
-    private fun createInstance(adUnitId: String): AppOpenAd {
-        val activity = requireNotNull(activity)
+    private fun createInstance(adUnitId: String): AppOpenAd? {
+        val activity = activity ?: return null
 
         val adChannel = MethodChannel(binding.binaryMessenger, "${CHANNEL_ID}_$adUnitId")
 
@@ -93,65 +93,76 @@ class AppOpenAd : ActivityAware, FlutterPlugin, MethodCallHandler {
     }
 
     private fun destroy(call: MethodCall, result: Result) {
-        val adUnitId = call.argument<String>("adUnitId")
-
-        requireNotNull(adUnitId)
+        val adUnitId = call.argument<String>("adUnitId") ?: run {
+            result.error("INVALID_ARGUMENT", "adUnitId is required", null)
+            return
+        }
 
         instances.remove(adUnitId)?.destroy()
 
         result.success(null)
     }
 
-    private fun get(adUnitId: String): AppOpenAd {
+    private fun get(adUnitId: String): AppOpenAd? {
         return instances[adUnitId] ?: createInstance(adUnitId)
     }
 
     private fun isAvailable(call: MethodCall, result: Result) {
-        val adUnitId = call.argument<String>("adUnitId")
-
-        requireNotNull(adUnitId)
+        val adUnitId = call.argument<String>("adUnitId") ?: run {
+            result.error("INVALID_ARGUMENT", "adUnitId is required", null)
+            return
+        }
 
         result.success(instances[adUnitId]?.isAvailable == true)
     }
 
     private fun isDestroyed(call: MethodCall, result: Result) {
-        val adUnitId = call.argument<String>("adUnitId")
-
-        requireNotNull(adUnitId)
+        val adUnitId = call.argument<String>("adUnitId") ?: run {
+            result.error("INVALID_ARGUMENT", "adUnitId is required", null)
+            return
+        }
 
         result.success(instances[adUnitId]?.isDestroyed == true)
     }
 
     private fun isShowing(call: MethodCall, result: Result) {
-        val adUnitId = call.argument<String>("adUnitId")
-
-        requireNotNull(adUnitId)
+        val adUnitId = call.argument<String>("adUnitId") ?: run {
+            result.error("INVALID_ARGUMENT", "adUnitId is required", null)
+            return
+        }
 
         result.success(instances[adUnitId]?.isShowing == true)
     }
 
     private fun loadAd(call: MethodCall, result: Result) {
-        val adUnitId    = call.argument<String> ("adUnitId")
+        val adUnitId    = call.argument<String> ("adUnitId") ?: run {
+            result.error("INVALID_ARGUMENT", "adUnitId is required", null)
+            return
+        }
         val autoReload  = call.argument<Boolean>("autoReload")
 
-        requireNotNull(adUnitId)
-
-        get(adUnitId).also {
-
-            autoReload?.apply { it.autoReload = this }
-
-            it.loadAd()
+        val appOpenAd = get(adUnitId) ?: run {
+            result.error("ACTIVITY_NOT_AVAILABLE", "Activity is not available", null)
+            return
         }
+
+        autoReload?.apply { appOpenAd.autoReload = this }
+
+        appOpenAd.loadAd()
 
         result.success(null)
     }
 
     private fun showAd(call: MethodCall, result: Result) {
-        val activity = requireNotNull(activity)
+        val activity = activity ?: run {
+            result.success(false)
+            return
+        }
 
-        val adUnitId = call.argument<String>("adUnitId")
-
-        requireNotNull(adUnitId)
+        val adUnitId = call.argument<String>("adUnitId") ?: run {
+            result.error("INVALID_ARGUMENT", "adUnitId is required", null)
+            return
+        }
 
         val appOpenAd = instances[adUnitId]
 
@@ -166,11 +177,15 @@ class AppOpenAd : ActivityAware, FlutterPlugin, MethodCallHandler {
     }
 
     private fun tryToShowAd(call: MethodCall, result: Result) {
-        val activity = requireNotNull(activity)
+        val activity = activity ?: run {
+            result.success(false)
+            return
+        }
 
-        val adUnitId = call.argument<String>("adUnitId")
-
-        requireNotNull(adUnitId)
+        val adUnitId = call.argument<String>("adUnitId") ?: run {
+            result.error("INVALID_ARGUMENT", "adUnitId is required", null)
+            return
+        }
 
         val instance = instances[adUnitId]
 

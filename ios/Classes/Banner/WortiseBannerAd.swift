@@ -21,7 +21,9 @@ public class WortiseBannerAdViewFactory: NSObject, FlutterPlatformViewFactory {
         arguments      args:   Any?
     ) -> FlutterPlatformView {
 
-        let values = args as! [String: Any]
+        guard let values = args as? [String: Any] else {
+            return WortiseErrorTextView("Invalid arguments for banner ad")
+        }
 
         return WortiseBannerAdView(
             frame:           frame,
@@ -47,17 +49,17 @@ public class WortiseBannerAdView: NSObject, FlutterPlatformView {
         frame:                     CGRect,
         viewIdentifier  viewId:    Int64,
         arguments       args:      [String: Any],
-        binaryMessenger messenger: FlutterBinaryMessenger?
+        binaryMessenger messenger: FlutterBinaryMessenger
     ) {
         let channelId = "\(WortiseBannerAdViewFactory.channelId)_\(viewId)"
 
-        channel = FlutterMethodChannel(name: channelId, binaryMessenger: messenger!)
+        channel = FlutterMethodChannel(name: channelId, binaryMessenger: messenger)
 
         bannerAd = WABannerAd(frame: frame)
 
         super.init()
 
-        let adUnitId = args["adUnitId"] as! String
+        let adUnitId = args["adUnitId"] as? String ?? ""
 
         bannerAd.adSize             = getAdSize(args)
         bannerAd.adUnitId           = adUnitId
@@ -78,12 +80,14 @@ public class WortiseBannerAdView: NSObject, FlutterPlatformView {
 
     fileprivate func getAdSize(_ args: [String: Any]) -> WAAdSize {
 
-        let params = args["adSize"] as! [String: Any]
+        guard let params = args["adSize"] as? [String: Any] else {
+            return WAAdSize(width: -1, height: -1)
+        }
 
-        let type = params["type"] as! String
+        let type = params["type"] as? String ?? "normal"
 
-        let height = CGFloat(params["height"] as! Int)
-        let width  = CGFloat(params["width"]  as! Int)
+        let height = CGFloat(params["height"] as? Int ?? -1)
+        let width  = CGFloat(params["width"]  as? Int ?? -1)
 
         switch type {
         case "anchored":
