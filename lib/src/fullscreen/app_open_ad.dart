@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/services.dart';
 
+import '../platform_util.dart';
 import '../wortise_sdk.dart';
 
 enum AppOpenAdEvent {
@@ -32,13 +33,15 @@ class AppOpenAd {
 
 
   AppOpenAd(this.adUnitId, {this.listener, this.autoReload = false}) {
-    if (listener != null) {
+    if (isSupportedPlatform && listener != null) {
       _adChannel = MethodChannel('${CHANNEL_ID}_$adUnitId');
       _adChannel?.setMethodCallHandler(_handleEvent);
     }
   }
 
   Future<bool> get isAvailable async {
+    if (!isSupportedPlatform) return false;
+
     Map<String, dynamic> values = {
       'adUnitId': adUnitId
     };
@@ -47,6 +50,8 @@ class AppOpenAd {
   }
 
   Future<bool> get isDestroyed async {
+    if (!isSupportedPlatform) return false;
+
     Map<String, dynamic> values = {
       'adUnitId': adUnitId
     };
@@ -55,6 +60,8 @@ class AppOpenAd {
   }
 
   Future<bool> get isShowing async {
+    if (!isSupportedPlatform) return false;
+
     Map<String, dynamic> values = {
       'adUnitId': adUnitId
     };
@@ -63,6 +70,8 @@ class AppOpenAd {
   }
 
   Future<void> destroy() async {
+    if (!isSupportedPlatform) return;
+
     Map<String, dynamic> values = {
       'adUnitId': adUnitId
     };
@@ -71,6 +80,8 @@ class AppOpenAd {
   }
 
   Future<void> loadAd() async {
+    if (!isSupportedPlatform) return;
+
     Map<String, dynamic> values = {
       'adUnitId': adUnitId,
       'autoReload': autoReload
@@ -80,6 +91,8 @@ class AppOpenAd {
   }
 
   Future<bool> showAd() async {
+    if (!isSupportedPlatform) return false;
+
     Map<String, dynamic> values = {
       'adUnitId': adUnitId
     };
@@ -88,6 +101,8 @@ class AppOpenAd {
   }
 
   Future<bool> tryToShowAd() async {
+    if (!isSupportedPlatform) return false;
+
     Map<String, dynamic> values = {
       'adUnitId': adUnitId
     };

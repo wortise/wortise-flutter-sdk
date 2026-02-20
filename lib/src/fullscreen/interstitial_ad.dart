@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/services.dart';
 
+import '../platform_util.dart';
 import '../wortise_sdk.dart';
 
 enum InterstitialAdEvent {
@@ -32,11 +33,15 @@ class InterstitialAd {
 
 
   InterstitialAd(this.adUnitId, {this.listener, this.reloadOnDismissed = false}) {
-    _adChannel = MethodChannel('${CHANNEL_ID}_$adUnitId');
-    _adChannel?.setMethodCallHandler(_handleEvent);
+    if (isSupportedPlatform) {
+      _adChannel = MethodChannel('${CHANNEL_ID}_$adUnitId');
+      _adChannel?.setMethodCallHandler(_handleEvent);
+    }
   }
 
   Future<bool> get isAvailable async {
+    if (!isSupportedPlatform) return false;
+
     Map<String, dynamic> values = {
       'adUnitId': adUnitId
     };
@@ -45,6 +50,8 @@ class InterstitialAd {
   }
 
   Future<bool> get isDestroyed async {
+    if (!isSupportedPlatform) return false;
+
     Map<String, dynamic> values = {
       'adUnitId': adUnitId
     };
@@ -53,6 +60,8 @@ class InterstitialAd {
   }
 
   Future<void> destroy() async {
+    if (!isSupportedPlatform) return;
+
     Map<String, dynamic> values = {
       'adUnitId': adUnitId
     };
@@ -61,6 +70,8 @@ class InterstitialAd {
   }
 
   Future<void> loadAd() async {
+    if (!isSupportedPlatform) return;
+
     Map<String, dynamic> values = {
       'adUnitId': adUnitId
     };
@@ -69,6 +80,8 @@ class InterstitialAd {
   }
 
   Future<bool> showAd() async {
+    if (!isSupportedPlatform) return false;
+
     Map<String, dynamic> values = {
       'adUnitId': adUnitId
     };
@@ -107,7 +120,7 @@ class InterstitialAd {
     case "loaded":
       listener?.call(InterstitialAdEvent.LOADED, call.arguments);
       break;
-    
+
     case "revenuePaid":
       listener?.call(InterstitialAdEvent.REVENUE_PAID, call.arguments);
       break;

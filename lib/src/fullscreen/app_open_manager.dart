@@ -3,7 +3,8 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 
 import 'app_open_ad.dart';
-import 'wortise_sdk.dart';
+import '../platform_util.dart';
+import '../wortise_sdk.dart';
 
 class AppOpenManager {
 
@@ -15,11 +16,15 @@ class AppOpenManager {
   AppOpenManager(this.appOpenAd);
 
   AppOpenManager.register(this.appOpenAd) {
-    _channel.setMethodCallHandler(_handleLifecycleEvent);
+    if (isSupportedPlatform) {
+      _channel.setMethodCallHandler(_handleLifecycleEvent);
+    }
   }
 
 
   void destroy() {
+    if (!isSupportedPlatform) return;
+
     _channel.setMethodCallHandler(null);
 
     appOpenAd.destroy();
