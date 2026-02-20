@@ -1,5 +1,4 @@
-import 'dart:io';
-
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -73,14 +72,14 @@ class _BannerAdState extends State<BannerAd> with AutomaticKeepAliveClientMixin 
 
     Widget platformView;
     
-    if (Platform.isAndroid) {
+    if (!kIsWeb && defaultTargetPlatform == TargetPlatform.android) {
       platformView = AndroidView(
         viewType: BannerAd.CHANNEL_ID,
         creationParams: params,
         creationParamsCodec: const StandardMessageCodec(),
         onPlatformViewCreated: _onViewCreated,
       );
-    } else if (Platform.isIOS) {
+    } else if (!kIsWeb && defaultTargetPlatform == TargetPlatform.iOS) {
       platformView = UiKitView(
         viewType: BannerAd.CHANNEL_ID,
         creationParams: params,

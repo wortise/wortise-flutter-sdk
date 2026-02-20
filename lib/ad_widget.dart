@@ -1,5 +1,4 @@
-import 'dart:io';
-
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -36,13 +35,13 @@ class _AdWidgetState extends State<AdWidget> with AutomaticKeepAliveClientMixin 
       "adId": widget.ad.adId
     };
 
-    if (Platform.isAndroid) {
+    if (!kIsWeb && defaultTargetPlatform == TargetPlatform.android) {
       return AndroidView(
         viewType: AdWidget.CHANNEL_ID,
         creationParams: params,
         creationParamsCodec: const StandardMessageCodec(),
       );
-    } else if (Platform.isIOS) {
+    } else if (!kIsWeb && defaultTargetPlatform == TargetPlatform.iOS) {
       return UiKitView(
         viewType: AdWidget.CHANNEL_ID,
         creationParams: params,

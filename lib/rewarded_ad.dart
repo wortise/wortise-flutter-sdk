@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/services.dart';
 
+import 'platform_util.dart';
 import 'wortise_sdk.dart';
 
 enum RewardedAdEvent {
@@ -33,11 +34,15 @@ class RewardedAd {
 
 
   RewardedAd(this.adUnitId, {this.listener, this.reloadOnDismissed = false}) {
-    _adChannel = MethodChannel('${CHANNEL_ID}_$adUnitId');
-    _adChannel?.setMethodCallHandler(_handleEvent);
+    if (isSupportedPlatform) {
+      _adChannel = MethodChannel('${CHANNEL_ID}_$adUnitId');
+      _adChannel?.setMethodCallHandler(_handleEvent);
+    }
   }
 
   Future<bool> get isAvailable async {
+    if (!isSupportedPlatform) return false;
+
     Map<String, dynamic> values = {
       'adUnitId': adUnitId
     };
@@ -46,6 +51,8 @@ class RewardedAd {
   }
 
   Future<bool> get isDestroyed async {
+    if (!isSupportedPlatform) return false;
+
     Map<String, dynamic> values = {
       'adUnitId': adUnitId
     };
@@ -54,6 +61,8 @@ class RewardedAd {
   }
 
   Future<void> destroy() async {
+    if (!isSupportedPlatform) return;
+
     Map<String, dynamic> values = {
       'adUnitId': adUnitId
     };
@@ -62,6 +71,8 @@ class RewardedAd {
   }
 
   Future<void> loadAd() async {
+    if (!isSupportedPlatform) return;
+
     Map<String, dynamic> values = {
       'adUnitId': adUnitId
     };
@@ -70,6 +81,8 @@ class RewardedAd {
   }
 
   Future<bool> showAd() async {
+    if (!isSupportedPlatform) return false;
+
     Map<String, dynamic> values = {
       'adUnitId': adUnitId
     };
@@ -112,7 +125,7 @@ class RewardedAd {
     case "loaded":
       listener?.call(RewardedAdEvent.LOADED, call.arguments);
       break;
-    
+
     case "revenuePaid":
       listener?.call(RewardedAdEvent.REVENUE_PAID, call.arguments);
       break;

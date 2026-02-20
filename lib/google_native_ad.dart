@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 
 import 'base_ad.dart';
+import 'platform_util.dart';
 import 'wortise_sdk.dart';
 
 enum GoogleNativeAdEvent {
@@ -27,14 +28,16 @@ class GoogleNativeAd extends BaseAd {
   final void Function(GoogleNativeAdEvent, dynamic)? listener;
 
 
-  GoogleNativeAd(String adUnitId, this.factoryId, this.listener) : super(adUnitId: adUnitId) {    
-    if (listener != null) {
+  GoogleNativeAd(String adUnitId, this.factoryId, this.listener) : super(adUnitId: adUnitId) {
+    if (isSupportedPlatform && listener != null) {
       _adChannel = MethodChannel('${CHANNEL_ID}_$adId');
       _adChannel?.setMethodCallHandler(_handleEvent);
     }
   }
 
   Future<void> destroy() async {
+    if (!isSupportedPlatform) return;
+
     Map<String, dynamic> values = {
       'adId': adId
     };
@@ -43,6 +46,8 @@ class GoogleNativeAd extends BaseAd {
   }
 
   Future<void> load() async {
+    if (!isSupportedPlatform) return;
+
     Map<String, dynamic> values = {
       'adId':      adId,
       'adUnitId':  adUnitId,
@@ -70,7 +75,7 @@ class GoogleNativeAd extends BaseAd {
     case "loaded":
       listener?.call(GoogleNativeAdEvent.LOADED, call.arguments);
       break;
-    
+
     case "revenuePaid":
       listener?.call(GoogleNativeAdEvent.REVENUE_PAID, call.arguments);
       break;
