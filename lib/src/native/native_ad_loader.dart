@@ -50,7 +50,7 @@ class NativeAdLoader {
       listener?.call(NativeAdEvent.CLICKED, call.arguments);
       break;
 
-    case "failed":
+    case "failedToLoad":
       listener?.call(NativeAdEvent.FAILED, call.arguments);
       break;
 
