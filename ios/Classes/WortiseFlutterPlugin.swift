@@ -7,7 +7,21 @@ public class WortiseFlutterPlugin: NSObject, FlutterPlugin {
     public static let channelMain = "wortise"
 
     public static var viewController: FlutterViewController? {
-        UIApplication.shared.delegate?.window??.rootViewController as? FlutterViewController
+        if let rootViewController = UIApplication.shared.delegate?.window??.rootViewController {
+            return find(flutterViewController: rootViewController)
+        }
+
+        let windows = UIApplication.shared.connectedScenes
+            .compactMap { $0 as? UIWindowScene }
+            .flatMap    { $0.windows }
+
+        let keyWindow = windows.first(where: { $0.isKeyWindow }) ?? windows.first
+
+        guard let rootViewController = keyWindow?.rootViewController else {
+            return nil
+        }
+
+        return find(flutterViewController: rootViewController)
     }
 
 
@@ -71,6 +85,26 @@ public class WortiseFlutterPlugin: NSObject, FlutterPlugin {
         }
     }
 
+
+    private static func find(flutterViewController vc: UIViewController) -> FlutterViewController? {
+        if let flutterViewController = vc as? FlutterViewController {
+            return flutterViewController
+        }
+
+        if let presented = vc.presentedViewController {
+            return find(flutterViewController: presented)
+        }
+
+        if let navigation = vc as? UINavigationController, let top = navigation.topViewController {
+            return find(flutterViewController: top)
+        }
+
+        if let tab = vc as? UITabBarController, let selected = tab.selectedViewController {
+            return find(flutterViewController: selected)
+        }
+
+        return nil
+    }
 
     private func initialize(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
         guard let args = call.arguments as? [String: Any] else {
