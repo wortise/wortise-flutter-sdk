@@ -1,5 +1,5 @@
 group 'com.wortise.ads.flutter'
-version '1.7.2'
+version '1.7.4'
 
 buildscript {
     ext.kotlin_version = '1.8.0'
