@@ -60,6 +60,9 @@ public class WortiseNativeAdManager: NSObject, WortiseAdWithView, FlutterPlugin 
         let args = call.arguments as? [String: Any]
 
         switch call.method {
+        case "cooldownRemainingMs":
+            cooldownRemainingMs(args, result: result)
+
         case "destroy":
             destroy(args, result: result)
 
@@ -69,6 +72,9 @@ public class WortiseNativeAdManager: NSObject, WortiseAdWithView, FlutterPlugin 
         case "isDestroyed":
             isDestroyed(args, result: result)
 
+        case "isInCooldown":
+            isInCooldown(args, result: result)
+
         case "loadAd":
             loadAd(args, result: result)
 
@@ -77,6 +83,17 @@ public class WortiseNativeAdManager: NSObject, WortiseAdWithView, FlutterPlugin 
         }
     }
 
+
+    private func cooldownRemainingMs(_ args: [String: Any]?, result: @escaping FlutterResult) {
+        guard let adUnitId = args?["adUnitId"] as? String else {
+            result(FlutterError.invalidArgument("Ad unit ID is required"))
+            return
+        }
+
+        let loader = instances[adUnitId]
+
+        result(Int((loader?.cooldownRemaining ?? 0) * 1000))
+    }
 
     private func create(
         instance adUnitId: String,
@@ -125,6 +142,17 @@ public class WortiseNativeAdManager: NSObject, WortiseAdWithView, FlutterPlugin 
         let loader = instances[adUnitId]
 
         result(loader?.isDestroyed == true)
+    }
+
+    private func isInCooldown(_ args: [String: Any]?, result: @escaping FlutterResult) {
+        guard let adUnitId = args?["adUnitId"] as? String else {
+            result(FlutterError.invalidArgument("Ad unit ID is required"))
+            return
+        }
+
+        let loader = instances[adUnitId]
+
+        result(loader?.isInCooldown == true)
     }
 
     private func loadAd(_ args: [String: Any]?, result: @escaping FlutterResult) {

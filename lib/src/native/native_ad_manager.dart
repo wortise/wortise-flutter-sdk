@@ -9,6 +9,14 @@ class NativeAdManager {
   static const MethodChannel _methodChannel = const MethodChannel(CHANNEL_ID);
 
 
+  static Future<int> cooldownRemainingMs(String adUnitId) async {
+    Map<String, dynamic> values = {
+      'adUnitId': adUnitId
+    };
+
+    return await _methodChannel.invokeMethod('cooldownRemainingMs', values);
+  }
+
   static Future<void> destroy(String adUnitId) async {
     Map<String, dynamic> values = {
       'adUnitId': adUnitId
@@ -23,6 +31,14 @@ class NativeAdManager {
     };
 
     await _methodChannel.invokeMethod('destroyAd', values);
+  }
+
+  static Future<bool> isInCooldown(String adUnitId) async {
+    Map<String, dynamic> values = {
+      'adUnitId': adUnitId
+    };
+
+    return await _methodChannel.invokeMethod('isInCooldown', values);
   }
 
   static Future<void> loadAd({

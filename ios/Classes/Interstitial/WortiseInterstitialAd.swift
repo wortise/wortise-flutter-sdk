@@ -31,6 +31,9 @@ public class WortiseInterstitialAd: NSObject, FlutterPlugin {
         let args = call.arguments as? [String: Any]
 
         switch call.method {
+        case "cooldownRemainingMs":
+            cooldownRemainingMs(args, result: result)
+
         case "destroy":
             destroy(args, result: result)
 
@@ -39,6 +42,12 @@ public class WortiseInterstitialAd: NSObject, FlutterPlugin {
 
         case "isDestroyed":
             isDestroyed(args, result: result)
+
+        case "isInCooldown":
+            isInCooldown(args, result: result)
+
+        case "isShowing":
+            isShowing(args, result: result)
 
         case "loadAd":
             loadAd(args, result: result)
@@ -51,6 +60,17 @@ public class WortiseInterstitialAd: NSObject, FlutterPlugin {
         }
     }
 
+
+    private func cooldownRemainingMs(_ args: [String: Any]?, result: @escaping FlutterResult) {
+        guard let adUnitId = args?["adUnitId"] as? String else {
+            result(FlutterError.invalidArgument("Ad unit ID is required"))
+            return
+        }
+
+        let interstitialAd = instances[adUnitId]
+
+        result(Int((interstitialAd?.cooldownRemaining ?? 0) * 1000))
+    }
 
     private func create(instance adUnitId: String) -> WAInterstitialAd {
         let channelId = "\(WortiseInterstitialAd.channelId)_\(adUnitId)"
@@ -97,6 +117,28 @@ public class WortiseInterstitialAd: NSObject, FlutterPlugin {
         let interstitialAd = instances[adUnitId]
 
         result(interstitialAd?.isDestroyed == true)
+    }
+
+    private func isInCooldown(_ args: [String: Any]?, result: @escaping FlutterResult) {
+        guard let adUnitId = args?["adUnitId"] as? String else {
+            result(FlutterError.invalidArgument("Ad unit ID is required"))
+            return
+        }
+
+        let interstitialAd = instances[adUnitId]
+
+        result(interstitialAd?.isInCooldown == true)
+    }
+
+    private func isShowing(_ args: [String: Any]?, result: @escaping FlutterResult) {
+        guard let adUnitId = args?["adUnitId"] as? String else {
+            result(FlutterError.invalidArgument("Ad unit ID is required"))
+            return
+        }
+
+        let interstitialAd = instances[adUnitId]
+
+        result(interstitialAd?.isShowing == true)
     }
 
     private func loadAd(_ args: [String: Any]?, result: @escaping FlutterResult) {

@@ -47,18 +47,32 @@ class NativeAdManager : AdWithView, FlutterPlugin, MethodCallHandler {
     override fun onMethodCall(call: MethodCall, result: Result) {
         when (call.method) {
 
-            "destroy"     -> destroy(call, result)
+            "cooldownRemainingMs" -> cooldownRemainingMs(call, result)
 
-            "destroyAd"   -> destroyAd(call, result)
+            "destroy"             -> destroy(call, result)
 
-            "isDestroyed" -> isDestroyed(call, result)
+            "destroyAd"           -> destroyAd(call, result)
 
-            "loadAd"      -> loadAd(call, result)
+            "isDestroyed"         -> isDestroyed(call, result)
 
-            else          -> result.notImplemented()
+            "isInCooldown"        -> isInCooldown(call, result)
+
+            "loadAd"              -> loadAd(call, result)
+
+            else                  -> result.notImplemented()
         }
     }
 
+
+    private fun cooldownRemainingMs(call: MethodCall, result: Result) {
+        val adUnitId = call.argument<String>("adUnitId")
+
+        requireNotNull(adUnitId)
+
+        val cooldownRemainingMs = instances[adUnitId]?.cooldownRemainingMs ?: 0L
+
+        result.success(cooldownRemainingMs)
+    }
 
     private fun createInstance(adUnitId: String, factory: NativeAdViewFactory): NativeAdLoader {
         val listener = NativeAdListener(adUnitId, factory)
@@ -96,6 +110,16 @@ class NativeAdManager : AdWithView, FlutterPlugin, MethodCallHandler {
         val isDestroyed = instances[adUnitId]?.isDestroyed == true
 
         result.success(isDestroyed)
+    }
+
+    private fun isInCooldown(call: MethodCall, result: Result) {
+        val adUnitId = call.argument<String>("adUnitId")
+
+        requireNotNull(adUnitId)
+
+        val isInCooldown = instances[adUnitId]?.isInCooldown == true
+
+        result.success(isInCooldown)
     }
 
     private fun loadAd(call: MethodCall, result: Result) {

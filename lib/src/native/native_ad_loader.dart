@@ -32,8 +32,16 @@ class NativeAdLoader {
     }
   }
 
+  Future<int> get cooldownRemainingMs async {
+    return await NativeAdManager.cooldownRemainingMs(adUnitId);
+  }
+
   Future<void> destroy() async {
     await NativeAdManager.destroy(adUnitId);
+  }
+
+  Future<bool> get isInCooldown async {
+    return await NativeAdManager.isInCooldown(adUnitId);
   }
 
   Future<void> loadAd() async {

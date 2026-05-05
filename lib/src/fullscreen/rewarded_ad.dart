@@ -40,6 +40,16 @@ class RewardedAd {
     }
   }
 
+  Future<int> get cooldownRemainingMs async {
+    if (!isSupportedPlatform) return 0;
+
+    Map<String, dynamic> values = {
+      'adUnitId': adUnitId
+    };
+
+    return await _channel.invokeMethod('cooldownRemainingMs', values);
+  }
+
   Future<bool> get isAvailable async {
     if (!isSupportedPlatform) return false;
 
@@ -58,6 +68,26 @@ class RewardedAd {
     };
 
     return await _channel.invokeMethod('isDestroyed', values);
+  }
+
+  Future<bool> get isInCooldown async {
+    if (!isSupportedPlatform) return false;
+
+    Map<String, dynamic> values = {
+      'adUnitId': adUnitId
+    };
+
+    return await _channel.invokeMethod('isInCooldown', values);
+  }
+
+  Future<bool> get isShowing async {
+    if (!isSupportedPlatform) return false;
+
+    Map<String, dynamic> values = {
+      'adUnitId': adUnitId
+    };
+
+    return await _channel.invokeMethod('isShowing', values);
   }
 
   Future<void> destroy() async {

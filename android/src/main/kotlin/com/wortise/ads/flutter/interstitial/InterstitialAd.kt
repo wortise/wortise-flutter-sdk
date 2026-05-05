@@ -56,17 +56,23 @@ class InterstitialAd : ActivityAware, FlutterPlugin, MethodCallHandler {
     override fun onMethodCall(call: MethodCall, result: Result) {
         when (call.method) {
 
-            "destroy"     -> destroy(call, result)
+            "cooldownRemainingMs" -> cooldownRemainingMs(call, result)
 
-            "isAvailable" -> isAvailable(call, result)
+            "destroy"             -> destroy(call, result)
 
-            "isDestroyed" -> isDestroyed(call, result)
+            "isAvailable"         -> isAvailable(call, result)
 
-            "loadAd"      -> loadAd(call, result)
+            "isDestroyed"         -> isDestroyed(call, result)
 
-            "showAd"      -> showAd(call, result)
+            "isInCooldown"        -> isInCooldown(call, result)
 
-            else          -> result.notImplemented()
+            "isShowing"           -> isShowing(call, result)
+
+            "loadAd"              -> loadAd(call, result)
+
+            "showAd"              -> showAd(call, result)
+
+            else                  -> result.notImplemented()
         }
     }
 
@@ -74,6 +80,17 @@ class InterstitialAd : ActivityAware, FlutterPlugin, MethodCallHandler {
         activity = binding.activity
     }
 
+
+    private fun cooldownRemainingMs(call: MethodCall, result: Result) {
+        val adUnitId = call.argument<String>("adUnitId") ?: run {
+            result.error("INVALID_ARGUMENT", "adUnitId is required", null)
+            return
+        }
+
+        val cooldownRemainingMs = instances[adUnitId]?.cooldownRemainingMs ?: 0L
+
+        result.success(cooldownRemainingMs)
+    }
 
     private fun createInstance(adUnitId: String): InterstitialAd? {
         val activity = activity ?: return null
@@ -119,6 +136,28 @@ class InterstitialAd : ActivityAware, FlutterPlugin, MethodCallHandler {
         val isDestroyed = instances[adUnitId]?.isDestroyed == true
 
         result.success(isDestroyed)
+    }
+
+    private fun isInCooldown(call: MethodCall, result: Result) {
+        val adUnitId = call.argument<String>("adUnitId") ?: run {
+            result.error("INVALID_ARGUMENT", "adUnitId is required", null)
+            return
+        }
+
+        val isInCooldown = instances[adUnitId]?.isInCooldown == true
+
+        result.success(isInCooldown)
+    }
+
+    private fun isShowing(call: MethodCall, result: Result) {
+        val adUnitId = call.argument<String>("adUnitId") ?: run {
+            result.error("INVALID_ARGUMENT", "adUnitId is required", null)
+            return
+        }
+
+        val isShowing = instances[adUnitId]?.isShowing == true
+
+        result.success(isShowing)
     }
 
     private fun loadAd(call: MethodCall, result: Result) {

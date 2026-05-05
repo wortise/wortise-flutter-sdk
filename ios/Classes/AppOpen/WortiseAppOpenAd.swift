@@ -31,6 +31,9 @@ public class WortiseAppOpenAd: NSObject, FlutterPlugin {
         let args = call.arguments as? [String: Any]
 
         switch call.method {
+        case "cooldownRemainingMs":
+            cooldownRemainingMs(args, result: result)
+
         case "destroy":
             destroy(args, result: result)
 
@@ -39,6 +42,9 @@ public class WortiseAppOpenAd: NSObject, FlutterPlugin {
 
         case "isDestroyed":
             isDestroyed(args, result: result)
+
+        case "isInCooldown":
+            isInCooldown(args, result: result)
 
         case "isShowing":
             isShowing(args, result: result)
@@ -57,6 +63,17 @@ public class WortiseAppOpenAd: NSObject, FlutterPlugin {
         }
     }
 
+
+    private func cooldownRemainingMs(_ args: [String: Any]?, result: @escaping FlutterResult) {
+        guard let adUnitId = args?["adUnitId"] as? String else {
+            result(FlutterError.invalidArgument("Ad unit ID is required"))
+            return
+        }
+
+        let appOpenAd = instances[adUnitId]
+
+        result(Int((appOpenAd?.cooldownRemaining ?? 0) * 1000))
+    }
 
     private func create(instance adUnitId: String) -> WAAppOpenAd {
         let channelId = "\(WortiseAppOpenAd.channelId)_\(adUnitId)"
@@ -103,6 +120,17 @@ public class WortiseAppOpenAd: NSObject, FlutterPlugin {
         let appOpenAd = instances[adUnitId]
 
         result(appOpenAd?.isDestroyed == true)
+    }
+
+    private func isInCooldown(_ args: [String: Any]?, result: @escaping FlutterResult) {
+        guard let adUnitId = args?["adUnitId"] as? String else {
+            result(FlutterError.invalidArgument("Ad unit ID is required"))
+            return
+        }
+
+        let appOpenAd = instances[adUnitId]
+
+        result(appOpenAd?.isInCooldown == true)
     }
 
     private func isShowing(_ args: [String: Any]?, result: @escaping FlutterResult) {
