@@ -4,13 +4,13 @@ import WortiseSDK
 
 public class WortiseAppOpenAd: NSObject, FlutterPlugin {
 
-    public static let channelId = "\(WortiseFlutterPlugin.channelMain)/appOpenAd"
+    private static let channelId = "\(WortiseFlutterPlugin.channelMain)/appOpenAd"
 
 
-    fileprivate var binaryMessenger: FlutterBinaryMessenger
+    private var binaryMessenger: FlutterBinaryMessenger
 
-    fileprivate var instances = [String: WAAppOpenAd]()
-    
+    private var instances = [String: WAAppOpenAd]()
+
 
     public static func register(with registrar: FlutterPluginRegistrar) {
         let binaryMessenger = registrar.messenger()
@@ -21,7 +21,7 @@ public class WortiseAppOpenAd: NSObject, FlutterPlugin {
 
         registrar.addMethodCallDelegate(instance, channel: channel)
     }
-    
+
 
     init(_ binaryMessenger: FlutterBinaryMessenger) {
         self.binaryMessenger = binaryMessenger
@@ -31,6 +31,9 @@ public class WortiseAppOpenAd: NSObject, FlutterPlugin {
         let args = call.arguments as? [String: Any]
 
         switch call.method {
+        case "cooldownRemainingMs":
+            cooldownRemainingMs(args, result: result)
+
         case "destroy":
             destroy(args, result: result)
 
@@ -39,6 +42,9 @@ public class WortiseAppOpenAd: NSObject, FlutterPlugin {
 
         case "isDestroyed":
             isDestroyed(args, result: result)
+
+        case "isInCooldown":
+            isInCooldown(args, result: result)
 
         case "isShowing":
             isShowing(args, result: result)
@@ -58,7 +64,18 @@ public class WortiseAppOpenAd: NSObject, FlutterPlugin {
     }
 
 
-    fileprivate func create(instance adUnitId: String) -> WAAppOpenAd {
+    private func cooldownRemainingMs(_ args: [String: Any]?, result: @escaping FlutterResult) {
+        guard let adUnitId = args?["adUnitId"] as? String else {
+            result(FlutterError.invalidArgument("Ad unit ID is required"))
+            return
+        }
+
+        let appOpenAd = instances[adUnitId]
+
+        result(Int((appOpenAd?.cooldownRemaining ?? 0) * 1000))
+    }
+
+    private func create(instance adUnitId: String) -> WAAppOpenAd {
         let channelId = "\(WortiseAppOpenAd.channelId)_\(adUnitId)"
 
         let channel = FlutterMethodChannel(name: channelId, binaryMessenger: binaryMessenger)
@@ -72,9 +89,9 @@ public class WortiseAppOpenAd: NSObject, FlutterPlugin {
         return appOpenAd
     }
 
-    fileprivate func destroy(_ args: [String: Any]?, result: @escaping FlutterResult) {
+    private func destroy(_ args: [String: Any]?, result: @escaping FlutterResult) {
         guard let adUnitId = args?["adUnitId"] as? String else {
-            result(FlutterError(code: "INVALID_ARGUMENTS", message: "Ad unit ID is required", details: nil))
+            result(FlutterError.invalidArgument("Ad unit ID is required"))
             return
         }
 
@@ -83,9 +100,9 @@ public class WortiseAppOpenAd: NSObject, FlutterPlugin {
         result(nil)
     }
 
-    fileprivate func isAvailable(_ args: [String: Any]?, result: @escaping FlutterResult) {
+    private func isAvailable(_ args: [String: Any]?, result: @escaping FlutterResult) {
         guard let adUnitId = args?["adUnitId"] as? String else {
-            result(FlutterError(code: "INVALID_ARGUMENTS", message: "Ad unit ID is required", details: nil))
+            result(FlutterError.invalidArgument("Ad unit ID is required"))
             return
         }
 
@@ -94,9 +111,9 @@ public class WortiseAppOpenAd: NSObject, FlutterPlugin {
         result(appOpenAd?.isAvailable == true)
     }
 
-    fileprivate func isDestroyed(_ args: [String: Any]?, result: @escaping FlutterResult) {
+    private func isDestroyed(_ args: [String: Any]?, result: @escaping FlutterResult) {
         guard let adUnitId = args?["adUnitId"] as? String else {
-            result(FlutterError(code: "INVALID_ARGUMENTS", message: "Ad unit ID is required", details: nil))
+            result(FlutterError.invalidArgument("Ad unit ID is required"))
             return
         }
 
@@ -105,9 +122,20 @@ public class WortiseAppOpenAd: NSObject, FlutterPlugin {
         result(appOpenAd?.isDestroyed == true)
     }
 
-    fileprivate func isShowing(_ args: [String: Any]?, result: @escaping FlutterResult) {
+    private func isInCooldown(_ args: [String: Any]?, result: @escaping FlutterResult) {
         guard let adUnitId = args?["adUnitId"] as? String else {
-            result(FlutterError(code: "INVALID_ARGUMENTS", message: "Ad unit ID is required", details: nil))
+            result(FlutterError.invalidArgument("Ad unit ID is required"))
+            return
+        }
+
+        let appOpenAd = instances[adUnitId]
+
+        result(appOpenAd?.isInCooldown == true)
+    }
+
+    private func isShowing(_ args: [String: Any]?, result: @escaping FlutterResult) {
+        guard let adUnitId = args?["adUnitId"] as? String else {
+            result(FlutterError.invalidArgument("Ad unit ID is required"))
             return
         }
 
@@ -116,9 +144,9 @@ public class WortiseAppOpenAd: NSObject, FlutterPlugin {
         result(appOpenAd?.isShowing == true)
     }
 
-    fileprivate func loadAd(_ args: [String: Any]?, result: @escaping FlutterResult) {
+    private func loadAd(_ args: [String: Any]?, result: @escaping FlutterResult) {
         guard let adUnitId = args?["adUnitId"] as? String else {
-            result(FlutterError(code: "INVALID_ARGUMENTS", message: "Ad unit ID is required", details: nil))
+            result(FlutterError.invalidArgument("Ad unit ID is required"))
             return
         }
 
@@ -133,9 +161,9 @@ public class WortiseAppOpenAd: NSObject, FlutterPlugin {
         result(nil)
     }
 
-    fileprivate func showAd(_ args: [String: Any]?, result: @escaping FlutterResult) {
+    private func showAd(_ args: [String: Any]?, result: @escaping FlutterResult) {
         guard let adUnitId = args?["adUnitId"] as? String else {
-            result(FlutterError(code: "INVALID_ARGUMENTS", message: "Ad unit ID is required", details: nil))
+            result(FlutterError.invalidArgument("Ad unit ID is required"))
             return
         }
 
@@ -143,7 +171,7 @@ public class WortiseAppOpenAd: NSObject, FlutterPlugin {
             result(false)
             return
         }
-        
+
         guard let viewController = WortiseFlutterPlugin.viewController else {
             result(false)
             return
@@ -154,9 +182,9 @@ public class WortiseAppOpenAd: NSObject, FlutterPlugin {
         result(true)
     }
 
-    fileprivate func tryToShowAd(_ args: [String: Any]?, result: @escaping FlutterResult) {
+    private func tryToShowAd(_ args: [String: Any]?, result: @escaping FlutterResult) {
         guard let adUnitId = args?["adUnitId"] as? String else {
-            result(FlutterError(code: "INVALID_ARGUMENTS", message: "Ad unit ID is required", details: nil))
+            result(FlutterError.invalidArgument("Ad unit ID is required"))
             return
         }
 
@@ -164,7 +192,7 @@ public class WortiseAppOpenAd: NSObject, FlutterPlugin {
             result(false)
             return
         }
-        
+
         guard let viewController = WortiseFlutterPlugin.viewController else {
             result(false)
             return
@@ -176,9 +204,9 @@ public class WortiseAppOpenAd: NSObject, FlutterPlugin {
     }
 }
 
-fileprivate class WortiseAppOpenDelegate: WAAppOpenDelegate {
+private class WortiseAppOpenDelegate: WAAppOpenDelegate {
 
-    fileprivate let channel: FlutterMethodChannel
+    private let channel: FlutterMethodChannel
 
 
     init(_ channel: FlutterMethodChannel) {
@@ -188,15 +216,15 @@ fileprivate class WortiseAppOpenDelegate: WAAppOpenDelegate {
     func didClick(appOpenAd: WAAppOpenAd) {
         channel.invokeMethod("clicked", arguments: nil)
     }
-    
+
     func didDismiss(appOpenAd: WAAppOpenAd) {
         channel.invokeMethod("dismissed", arguments: nil)
     }
-    
+
     func didFailToLoad(appOpenAd: WAAppOpenAd, error: WAAdError) {
         channel.invokeMethod("failedToLoad", arguments: error.toMap())
     }
-    
+
     func didFailToShow(appOpenAd: WAAppOpenAd, error: WAAdError) {
         channel.invokeMethod("failedToShow", arguments: error.toMap())
     }

@@ -41,6 +41,7 @@ public class WortiseFlutterPlugin: NSObject, FlutterPlugin {
         WortiseDataManager          .register(with: registrar)
         WortiseGoogleNativeAdManager.register(with: registrar)
         WortiseInterstitialAd       .register(with: registrar)
+        WortiseNativeAdManager      .register(with: registrar)
         WortiseRewardedAd           .register(with: registrar)
 
         let adWidgetFactory = WortiseAdWidgetFactory(instance)
@@ -53,12 +54,13 @@ public class WortiseFlutterPlugin: NSObject, FlutterPlugin {
     }
 
 
-    public func get(platformView adId: String) -> FlutterPlatformView? {
+    public func get(platformView instanceId: String) -> FlutterPlatformView? {
         let instances: [WortiseAdWithView?] = [
-            WortiseGoogleNativeAdManager.instance
+            WortiseGoogleNativeAdManager.instance,
+            WortiseNativeAdManager.instance
         ]
 
-        return instances.compactMap { $0?.get(platformView: adId) }.first
+        return instances.compactMap { $0?.get(platformView: instanceId) }.first
     }
 
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
@@ -84,7 +86,7 @@ public class WortiseFlutterPlugin: NSObject, FlutterPlugin {
     }
 
 
-    fileprivate static func find(flutterViewController vc: UIViewController) -> FlutterViewController? {
+    private static func find(flutterViewController vc: UIViewController) -> FlutterViewController? {
         if let flutterViewController = vc as? FlutterViewController {
             return flutterViewController
         }
@@ -104,14 +106,14 @@ public class WortiseFlutterPlugin: NSObject, FlutterPlugin {
         return nil
     }
 
-    fileprivate func initialize(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
+    private func initialize(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
         guard let args = call.arguments as? [String: Any] else {
-            result(FlutterError(code: "INVALID_ARGUMENTS", message: "Invalid arguments", details: nil))
+            result(FlutterError.invalidArgument("Invalid arguments"))
             return
         }
 
         guard let assetKey = args["assetKey"] as? String else {
-            result(FlutterError(code: "INVALID_ARGUMENTS", message: "Asset key is required", details: nil))
+            result(FlutterError.invalidArgument("Asset key is required"))
             return
         }
 
@@ -120,7 +122,7 @@ public class WortiseFlutterPlugin: NSObject, FlutterPlugin {
         }
     }
 
-    fileprivate func wait(_ result: @escaping FlutterResult) {
+    private func wait(_ result: @escaping FlutterResult) {
         WortiseAds.shared.wait { result(nil) }
     }
 }

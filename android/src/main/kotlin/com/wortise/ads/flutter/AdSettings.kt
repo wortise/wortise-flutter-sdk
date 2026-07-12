@@ -104,6 +104,6 @@ class AdSettings : FlutterPlugin, MethodCallHandler {
 
 
     companion object {
-        const val CHANNEL_ID = "${CHANNEL_MAIN}/adSettings"
+        private const val CHANNEL_ID = "${CHANNEL_MAIN}/adSettings"
     }
 }

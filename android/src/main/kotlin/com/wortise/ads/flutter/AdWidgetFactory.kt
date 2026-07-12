@@ -23,6 +23,6 @@ class AdWidgetFactory(private val plugin: WortiseFlutterPlugin) : PlatformViewFa
 
 
     companion object {
-        const val CHANNEL_ID = "${CHANNEL_MAIN}/adWidget"
+        internal const val CHANNEL_ID = "${CHANNEL_MAIN}/adWidget"
     }
 }

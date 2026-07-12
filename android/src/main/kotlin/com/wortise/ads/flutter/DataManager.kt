@@ -100,6 +100,6 @@ class DataManager : FlutterPlugin, MethodCallHandler {
 
 
     companion object {
-        const val CHANNEL_ID = "${CHANNEL_MAIN}/dataManager"
+        private const val CHANNEL_ID = "${CHANNEL_MAIN}/dataManager"
     }
 }

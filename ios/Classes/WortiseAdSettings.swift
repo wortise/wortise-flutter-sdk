@@ -4,8 +4,8 @@ import WortiseSDK
 
 public class WortiseAdSettings: NSObject, FlutterPlugin {
 
-    public static let channelId = "\(WortiseFlutterPlugin.channelMain)/adSettings"
-    
+    private static let channelId = "\(WortiseFlutterPlugin.channelMain)/adSettings"
+
 
     public static func register(with registrar: FlutterPluginRegistrar) {
         let channel = FlutterMethodChannel(name: channelId, binaryMessenger: registrar.messenger())
@@ -14,7 +14,7 @@ public class WortiseAdSettings: NSObject, FlutterPlugin {
 
         registrar.addMethodCallDelegate(instance, channel: channel)
     }
-    
+
 
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
         let args = call.arguments as? [String: Any]
@@ -24,7 +24,7 @@ public class WortiseAdSettings: NSObject, FlutterPlugin {
             result(WAAdSettings.assetKey)
 
         case "getMaxAdContentRating":
-            result(WAAdSettings.maxAdContentRating?.name)
+            result(WAAdSettings.maxAdContentRating?.name.lowercased())
 
         case "getUserId":
             result(nil)
@@ -53,9 +53,9 @@ public class WortiseAdSettings: NSObject, FlutterPlugin {
     }
 
 
-    fileprivate func setChildDirected(_ args: [String: Any]?, result: @escaping FlutterResult) {
+    private func setChildDirected(_ args: [String: Any]?, result: @escaping FlutterResult) {
         guard let enabled = args?["enabled"] as? Bool else {
-            result(FlutterError(code: "INVALID_ARGUMENT", message: "Invalid argument", details: nil))
+            result(FlutterError.invalidArgument())
             return
         }
 
@@ -64,7 +64,7 @@ public class WortiseAdSettings: NSObject, FlutterPlugin {
         result(nil)
     }
 
-    fileprivate func setMaxAdContentRating(_ args: [String: Any]?, result: @escaping FlutterResult) {
+    private func setMaxAdContentRating(_ args: [String: Any]?, result: @escaping FlutterResult) {
         let name = args?["rating"] as? String
 
         WAAdSettings.maxAdContentRating = name != nil ? WAAdContentRating.from(name: name!) : nil
@@ -72,9 +72,9 @@ public class WortiseAdSettings: NSObject, FlutterPlugin {
         result(nil)
     }
 
-    fileprivate func setTestEnabled(_ args: [String: Any]?, result: @escaping FlutterResult) {
+    private func setTestEnabled(_ args: [String: Any]?, result: @escaping FlutterResult) {
         guard let enabled = args?["enabled"] as? Bool else {
-            result(FlutterError(code: "INVALID_ARGUMENT", message: "Invalid argument", details: nil))
+            result(FlutterError.invalidArgument())
             return
         }
 

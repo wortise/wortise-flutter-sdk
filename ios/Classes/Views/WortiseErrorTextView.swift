@@ -3,9 +3,9 @@ import UIKit
 
 public class WortiseErrorTextView: NSObject, FlutterPlatformView {
 
-    fileprivate var message: String
+    private var message: String
 
-    fileprivate lazy var textView: UITextView = {
+    private lazy var textView: UITextView = {
         let textView = UITextView()
 
         textView.backgroundColor = .red

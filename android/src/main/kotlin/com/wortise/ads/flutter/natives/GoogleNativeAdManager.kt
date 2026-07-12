@@ -47,35 +47,30 @@ class GoogleNativeAdManager : AdWithView, FlutterPlugin, MethodCallHandler {
     }
 
 
-    private fun clear(adId: String) {
-        instances.remove(adId)?.destroy()
+    private fun clear(instanceId: String) {
+        instances.remove(instanceId)?.destroy()
     }
 
-    private fun createInstance(adId: String, adUnitId: String, adFactory: GoogleNativeAdFactory): GoogleNativeAd {
-        clear(adId)
+    private fun createInstance(instanceId: String, adUnitId: String, adFactory: GoogleNativeAdFactory): GoogleNativeAd {
+        clear(instanceId)
 
-        return GoogleNativeAd(context, adId, adUnitId, adFactory, binding.binaryMessenger).also {
-            instances[adId] = it
+        return GoogleNativeAd(context, instanceId, adUnitId, adFactory, binding.binaryMessenger).also {
+            instances[instanceId] = it
         }
     }
 
     private fun destroy(call: MethodCall, result: Result) {
-        val adId = call.argument<String>("adId") ?: run {
-            result.error("INVALID_ARGUMENT", "adId is required", null)
+        val instanceId = call.argument<String>("instanceId") ?: run {
+            result.error("INVALID_ARGUMENT", "instanceId is required", null)
             return
         }
 
-        clear(adId)
+        clear(instanceId)
 
         result.success(null)
     }
 
     private fun load(call: MethodCall, result: Result) {
-        val adId = call.argument<String>("adId") ?: run {
-            result.error("INVALID_ARGUMENT", "adId is required", null)
-            return
-        }
-
         val adUnitId = call.argument<String>("adUnitId") ?: run {
             result.error("INVALID_ARGUMENT", "adUnitId is required", null)
             return
@@ -86,6 +81,11 @@ class GoogleNativeAdManager : AdWithView, FlutterPlugin, MethodCallHandler {
             return
         }
 
+        val instanceId = call.argument<String>("instanceId") ?: run {
+            result.error("INVALID_ARGUMENT", "instanceId is required", null)
+            return
+        }
+
         val adFactory = adFactories[factoryId]
 
         if (adFactory == null) {
@@ -93,7 +93,7 @@ class GoogleNativeAdManager : AdWithView, FlutterPlugin, MethodCallHandler {
             return
         }
 
-        val nativeAd = createInstance(adId, adUnitId, adFactory)
+        val nativeAd = createInstance(instanceId, adUnitId, adFactory)
 
         nativeAd.load()
 
@@ -101,8 +101,8 @@ class GoogleNativeAdManager : AdWithView, FlutterPlugin, MethodCallHandler {
     }
 
 
-    override fun getPlatformView(adId: String): PlatformView? {
-        val nativeAdView = instances[adId]?.nativeAdView ?: return null
+    override fun getPlatformView(instanceId: String): PlatformView? {
+        val nativeAdView = instances[instanceId]?.nativeAdView ?: return null
 
         return FlutterPlatformView(nativeAdView)
     }
@@ -110,7 +110,7 @@ class GoogleNativeAdManager : AdWithView, FlutterPlugin, MethodCallHandler {
 
     companion object {
 
-        const val CHANNEL_ID = "${CHANNEL_MAIN}/nativeAd"
+        const val CHANNEL_ID = "${CHANNEL_MAIN}/googleNativeAd"
 
 
         private val adFactories = mutableMapOf<String, GoogleNativeAdFactory>()

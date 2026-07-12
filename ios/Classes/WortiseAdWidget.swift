@@ -4,7 +4,7 @@ import WortiseSDK
 
 public class WortiseAdWidgetFactory: NSObject, FlutterPlatformViewFactory {
 
-    public static let channelId = "\(WortiseFlutterPlugin.channelMain)/adWidget"
+    internal static let channelId = "\(WortiseFlutterPlugin.channelMain)/adWidget"
 
 
     private var plugin: WortiseFlutterPlugin
