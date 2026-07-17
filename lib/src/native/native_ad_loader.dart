@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/services.dart';
 
+import '../request_parameters.dart';
 import 'native_ad.dart';
 import 'native_ad_manager.dart';
 
@@ -25,7 +26,7 @@ class NativeAdLoader {
   final void Function(NativeAdEvent, dynamic)? listener;
 
 
-  NativeAdLoader(this.adUnitId, this.factoryId, this.listener) {    
+  NativeAdLoader(this.adUnitId, this.factoryId, this.listener) {
     if (listener != null) {
       _channel = MethodChannel('${NativeAdManager.CHANNEL_ID}_$adUnitId');
       _channel?.setMethodCallHandler(_handleEvent);
@@ -44,10 +45,11 @@ class NativeAdLoader {
     return await NativeAdManager.isInCooldown(adUnitId);
   }
 
-  Future<void> loadAd() async {
+  Future<void> loadAd({RequestParameters? requestParameters}) async {
     await NativeAdManager.loadAd(
       adUnitId: adUnitId,
-      factoryId: factoryId
+      factoryId: factoryId,
+      requestParameters: requestParameters
     );
   }
 

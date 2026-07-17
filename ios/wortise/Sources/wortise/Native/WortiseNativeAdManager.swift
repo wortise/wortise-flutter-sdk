@@ -171,7 +171,9 @@ public class WortiseNativeAdManager: NSObject, WortiseAdWithView, FlutterPlugin 
 
         let loader = instances[adUnitId] ?? create(instance: adUnitId, factory: factory)
 
-        loader.loadAd()
+        let parameters = WARequestParameters.from(args)
+
+        loader.loadAd(parameters: parameters)
 
         result(nil)
     }

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../ad_size.dart';
+import '../request_parameters.dart';
 import '../wortise_sdk.dart';
 
 enum BannerAdEvent {
@@ -34,6 +35,8 @@ class BannerAd extends StatefulWidget {
 
   final void Function(BannerAdEvent, dynamic)? listener;
 
+  final RequestParameters? requestParameters;
+
 
   const BannerAd({
     Key? key,
@@ -42,6 +45,7 @@ class BannerAd extends StatefulWidget {
     this.autoRefreshTime = 0,
     this.listener,
     this.keepAlive = false,
+    this.requestParameters,
   }) : super(key: key);
 
   @override
@@ -67,7 +71,8 @@ class _BannerAdState extends State<BannerAd> with AutomaticKeepAliveClientMixin 
     Map<String, dynamic> params = {
       "adSize": widget.adSize.toMap,
       "adUnitId": widget.adUnitId,
-      "autoRefreshTime": widget.autoRefreshTime
+      "autoRefreshTime": widget.autoRefreshTime,
+      "requestParameters": widget.requestParameters?.toMap
     };
 
     Widget platformView;

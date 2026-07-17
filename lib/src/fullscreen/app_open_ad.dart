@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 
 import '../platform_util.dart';
+import '../request_parameters.dart';
 import '../wortise_sdk.dart';
 
 enum AppOpenAdEvent {
@@ -99,12 +100,13 @@ class AppOpenAd {
     await _channel.invokeMethod('destroy', values);
   }
 
-  Future<void> loadAd() async {
+  Future<void> loadAd({RequestParameters? requestParameters}) async {
     if (!isSupportedPlatform) return;
 
     Map<String, dynamic> values = {
       'adUnitId': adUnitId,
-      'autoReload': autoReload
+      'autoReload': autoReload,
+      'requestParameters': requestParameters?.toMap
     };
 
     await _channel.invokeMethod('loadAd', values);

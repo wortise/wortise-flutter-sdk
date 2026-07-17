@@ -70,7 +70,9 @@ public class WortiseBannerAdView: NSObject, FlutterPlatformView {
             bannerAd.autoRefreshTime = time
         }
 
-        bannerAd.loadAd()
+        let parameters = WARequestParameters.from(args)
+
+        bannerAd.loadAd(parameters: parameters)
     }
 
     public func view() -> UIView {

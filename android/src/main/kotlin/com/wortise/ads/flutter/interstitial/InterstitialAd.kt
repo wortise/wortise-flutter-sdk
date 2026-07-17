@@ -5,6 +5,7 @@ import android.content.Context
 import com.wortise.ads.AdError
 import com.wortise.ads.RevenueData
 import com.wortise.ads.flutter.WortiseFlutterPlugin.Companion.CHANNEL_MAIN
+import com.wortise.ads.flutter.extensions.getRequestParameters
 import com.wortise.ads.flutter.extensions.toMap
 import com.wortise.ads.interstitial.InterstitialAd
 import io.flutter.embedding.engine.plugins.FlutterPlugin
@@ -171,7 +172,9 @@ class InterstitialAd : ActivityAware, FlutterPlugin, MethodCallHandler {
             return
         }
 
-        interstitialAd.loadAd()
+        val parameters = call.getRequestParameters()
+
+        interstitialAd.loadAd(parameters)
 
         result.success(null)
     }

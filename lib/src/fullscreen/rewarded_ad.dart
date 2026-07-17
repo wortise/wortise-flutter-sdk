@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 
 import '../platform_util.dart';
+import '../request_parameters.dart';
 import '../wortise_sdk.dart';
 
 enum RewardedAdEvent {
@@ -25,6 +26,8 @@ class RewardedAd {
 
 
   MethodChannel? _adChannel;
+
+  RequestParameters? _requestParameters;
 
   final String adUnitId;
 
@@ -100,11 +103,14 @@ class RewardedAd {
     await _channel.invokeMethod('destroy', values);
   }
 
-  Future<void> loadAd() async {
+  Future<void> loadAd({RequestParameters? requestParameters}) async {
     if (!isSupportedPlatform) return;
 
+    _requestParameters = requestParameters;
+
     Map<String, dynamic> values = {
-      'adUnitId': adUnitId
+      'adUnitId': adUnitId,
+      'requestParameters': requestParameters?.toMap
     };
 
     await _channel.invokeMethod('loadAd', values);
@@ -135,7 +141,7 @@ class RewardedAd {
       listener?.call(RewardedAdEvent.DISMISSED, call.arguments);
 
       if (reloadOnDismissed) {
-        loadAd();
+        loadAd(requestParameters: _requestParameters);
       }
 
       break;

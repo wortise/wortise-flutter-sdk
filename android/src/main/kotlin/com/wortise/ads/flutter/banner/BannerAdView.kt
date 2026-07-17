@@ -6,6 +6,7 @@ import com.wortise.ads.AdSize
 import com.wortise.ads.RevenueData
 import com.wortise.ads.banner.BannerAd
 import com.wortise.ads.flutter.banner.BannerAdViewFactory.Companion.CHANNEL_ID
+import com.wortise.ads.flutter.extensions.getRequestParameters
 import com.wortise.ads.flutter.extensions.toMap
 import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.MethodChannel
@@ -21,6 +22,8 @@ class BannerAdView(private val context: Context, viewId: Int, args: Map<*, *>, m
 
     private val channel = MethodChannel(messenger, "${CHANNEL_ID}_$viewId")
 
+    private val requestParameters = getRequestParameters(args)
+
 
     init {
         bannerAd = BannerAd(context).also {
@@ -30,7 +33,7 @@ class BannerAdView(private val context: Context, viewId: Int, args: Map<*, *>, m
 
             autoRefreshTime?.apply { it.autoRefreshTime = toLong() }
 
-            it.loadAd()
+            it.loadAd(requestParameters)
         }
     }
 

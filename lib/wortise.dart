@@ -5,6 +5,7 @@ export 'src/ad_size.dart';
 export 'src/ad_settings.dart';
 export 'src/ad_widget.dart';
 export 'src/data_manager.dart';
+export 'src/request_parameters.dart';
 export 'src/user_gender.dart';
 
 // Consent Manager

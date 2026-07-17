@@ -149,7 +149,9 @@ public class WortiseInterstitialAd: NSObject, FlutterPlugin {
 
         let interstitialAd = instances[adUnitId] ?? create(instance: adUnitId)
 
-        interstitialAd.loadAd()
+        let parameters = WARequestParameters.from(args)
+
+        interstitialAd.loadAd(parameters: parameters)
 
         result(nil)
     }

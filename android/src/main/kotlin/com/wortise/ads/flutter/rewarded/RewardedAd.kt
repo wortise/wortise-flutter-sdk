@@ -5,6 +5,7 @@ import android.content.Context
 import com.wortise.ads.AdError
 import com.wortise.ads.RevenueData
 import com.wortise.ads.flutter.WortiseFlutterPlugin.Companion.CHANNEL_MAIN
+import com.wortise.ads.flutter.extensions.getRequestParameters
 import com.wortise.ads.flutter.extensions.toMap
 import com.wortise.ads.rewarded.RewardedAd
 import com.wortise.ads.rewarded.models.Reward
@@ -172,7 +173,9 @@ class RewardedAd : ActivityAware, FlutterPlugin, MethodCallHandler {
             return
         }
 
-        rewardedAd.loadAd()
+        val parameters = call.getRequestParameters()
+
+        rewardedAd.loadAd(parameters)
 
         result.success(null)
     }

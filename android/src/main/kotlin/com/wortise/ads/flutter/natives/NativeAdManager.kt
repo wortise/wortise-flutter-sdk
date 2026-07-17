@@ -5,6 +5,7 @@ import com.wortise.ads.AdError
 import com.wortise.ads.RevenueData
 import com.wortise.ads.flutter.AdWithView
 import com.wortise.ads.flutter.WortiseFlutterPlugin.Companion.CHANNEL_MAIN
+import com.wortise.ads.flutter.extensions.getRequestParameters
 import com.wortise.ads.flutter.extensions.toMap
 import com.wortise.ads.flutter.views.FlutterPlatformView
 import com.wortise.ads.natives.NativeAd
@@ -138,7 +139,9 @@ class NativeAdManager : AdWithView, FlutterPlugin, MethodCallHandler {
 
         val loader = instances[adUnitId] ?: createInstance(adUnitId, factory)
 
-        loader.loadAd()
+        val parameters = call.getRequestParameters()
+
+        loader.loadAd(parameters)
 
         result.success(null)
     }

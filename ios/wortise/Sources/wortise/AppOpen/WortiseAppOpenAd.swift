@@ -156,7 +156,9 @@ public class WortiseAppOpenAd: NSObject, FlutterPlugin {
             appOpenAd.autoReload = autoReload
         }
 
-        appOpenAd.loadAd()
+        let parameters = WARequestParameters.from(args)
+
+        appOpenAd.loadAd(parameters: parameters)
 
         result(nil)
     }

@@ -1,5 +1,6 @@
 import 'package:flutter/services.dart';
 
+import '../request_parameters.dart';
 import '../wortise_sdk.dart';
 
 class NativeAdManager {
@@ -43,11 +44,13 @@ class NativeAdManager {
 
   static Future<void> loadAd({
     required String adUnitId,
-    required String factoryId
+    required String factoryId,
+    RequestParameters? requestParameters
   }) async {
     Map<String, dynamic> values = {
       'adUnitId': adUnitId,
-      'factoryId': factoryId
+      'factoryId': factoryId,
+      'requestParameters': requestParameters?.toMap
     };
 
     await _methodChannel.invokeMethod('loadAd', values);

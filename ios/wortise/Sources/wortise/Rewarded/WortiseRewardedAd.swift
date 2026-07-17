@@ -149,7 +149,9 @@ public class WortiseRewardedAd: NSObject, FlutterPlugin {
 
         let rewardedAd = instances[adUnitId] ?? create(instance: adUnitId)
 
-        rewardedAd.loadAd()
+        let parameters = WARequestParameters.from(args)
+
+        rewardedAd.loadAd(parameters: parameters)
 
         result(nil)
     }
