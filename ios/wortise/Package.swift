@@ -11,7 +11,7 @@ let package = Package(
     ],
     dependencies: [
         // Keep this exact pin aligned with the podspec's WortiseSDK dependency.
-        .package(url: "https://github.com/wortise/wortise-ios-sdk-spm.git", exact: "1.8.0-beta.6"),
+        .package(url: "https://github.com/wortise/wortise-ios-sdk-spm.git", exact: "1.8.0-beta.7"),
         .package(url: "https://github.com/googleads/swift-package-manager-google-mobile-ads.git", from: "13.4.0")
     ],
     targets: [
