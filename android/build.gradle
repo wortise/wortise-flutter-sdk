@@ -28,7 +28,15 @@ rootProject.allprojects {
 }
 
 apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android'
+
+if (project.extensions.findByName('kotlin') == null) {
+    project.pluginManager.apply('kotlin-android')
+}
+
+def usingKgp = project.plugins.hasPlugin('org.jetbrains.kotlin.android')
+
+def agpMajor = com.android.Version.ANDROID_GRADLE_PLUGIN_VERSION.tokenize('.')[0] as int
+def javaVersion = agpMajor >= 9 ? JavaVersion.VERSION_11 : JavaVersion.VERSION_1_8
 
 android {
     compileSdk 35
@@ -38,24 +46,22 @@ android {
     }
 
     defaultConfig {
-        minSdk 23
+        minSdk 24
     }
 
-    lintOptions {
+    lint {
         disable 'InvalidPackage'
     }
 
-    sourceSets {
-        main.java.srcDirs += 'src/main/kotlin'
-    }
-
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility javaVersion
+        targetCompatibility javaVersion
     }
 
-    kotlinOptions {
-        jvmTarget = '1.8'
+    if (usingKgp) {
+        kotlinOptions {
+            jvmTarget = javaVersion.toString()
+        }
     }
 }
 
