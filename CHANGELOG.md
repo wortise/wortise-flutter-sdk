@@ -1,3 +1,14 @@
+## 1.8.0
+
+* Wortise Android SDK updated to version 1.8.0
+* Wortise iOS SDK updated to version 1.8.0
+* Support for the new native ads
+* Collapsible banner support
+* Swift Package Manager dependency support for iOS
+* Added cooldown methods
+* Support for AGP 9 and built-in Kotlin, plus corrected minimum SDK and Flutter version constraints
+* Various improvements and fixes
+
 ## 1.7.5
 
 * Wortise iOS SDK updated to version 1.7.3
