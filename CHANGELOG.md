@@ -1,3 +1,7 @@
+## 1.8.1
+
+* Fixed the Wortise iOS SDK version used by Swift Package Manager (1.8.0)
+
 ## 1.8.0
 
 * Wortise Android SDK updated to version 1.8.0
