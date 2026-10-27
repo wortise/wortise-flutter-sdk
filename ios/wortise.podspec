@@ -17,10 +17,10 @@ Pod::Spec.new do |s|
 
   s.source       = { :path => '.' }
   s.source_files = 'wortise/Sources/wortise/**/*'
-  s.platform     = :ios, '13.0'
+  s.platform     = :ios, '15.0'
 
   s.dependency 'Flutter'
-  s.dependency 'WortiseSDK', '1.8.0'
+  s.dependency 'WortiseSDK', '1.8.1'
 
   # Flutter.framework does not contain a i386 slice. Only x86_64 simulators are supported.
   s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES', 'VALID_ARCHS[sdk=iphonesimulator*]' => 'x86_64' }

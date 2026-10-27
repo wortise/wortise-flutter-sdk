@@ -1,3 +1,8 @@
+## 1.8.2
+
+* Wortise iOS SDK updated to version 1.8.1
+* Raised the minimum iOS version to 15.0 (required by the DT Exchange and Meta mediation adapters)
+
 ## 1.8.1
 
 * Fixed the Wortise iOS SDK version used by Swift Package Manager (1.8.0)
