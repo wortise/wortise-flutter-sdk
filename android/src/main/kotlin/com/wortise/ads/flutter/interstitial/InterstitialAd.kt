@@ -71,6 +71,8 @@ class InterstitialAd : ActivityAware, FlutterPlugin, MethodCallHandler {
 
             "loadAd"              -> loadAd(call, result)
 
+            "reloadAd"            -> reloadAd(call, result)
+
             "showAd"              -> showAd(call, result)
 
             else                  -> result.notImplemented()
@@ -167,14 +169,40 @@ class InterstitialAd : ActivityAware, FlutterPlugin, MethodCallHandler {
             return
         }
 
+        val autoRefresh = call.argument<Boolean>("autoRefresh")
+
         val interstitialAd = instances[adUnitId] ?: createInstance(adUnitId) ?: run {
             result.error("ACTIVITY_NOT_AVAILABLE", "Activity is not available", null)
             return
         }
 
+        autoRefresh?.apply { interstitialAd.autoRefresh = this }
+
         val parameters = call.getRequestParameters()
 
         interstitialAd.loadAd(parameters)
+
+        result.success(null)
+    }
+
+    private fun reloadAd(call: MethodCall, result: Result) {
+        val adUnitId = call.argument<String>("adUnitId") ?: run {
+            result.error("INVALID_ARGUMENT", "adUnitId is required", null)
+            return
+        }
+
+        val autoRefresh = call.argument<Boolean>("autoRefresh")
+
+        val interstitialAd = instances[adUnitId] ?: createInstance(adUnitId) ?: run {
+            result.error("ACTIVITY_NOT_AVAILABLE", "Activity is not available", null)
+            return
+        }
+
+        autoRefresh?.apply { interstitialAd.autoRefresh = this }
+
+        val parameters = call.getRequestParameters()
+
+        interstitialAd.reloadAd(parameters)
 
         result.success(null)
     }
@@ -226,6 +254,10 @@ class InterstitialAd : ActivityAware, FlutterPlugin, MethodCallHandler {
 
         override fun onInterstitialLoaded(ad: InterstitialAd) {
             channel.invokeMethod("loaded", null)
+        }
+
+        override fun onInterstitialRefreshed(ad: InterstitialAd) {
+            channel.invokeMethod("refreshed", null)
         }
 
         override fun onInterstitialRevenuePaid(ad: InterstitialAd, data: RevenueData) {

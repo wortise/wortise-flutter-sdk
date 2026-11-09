@@ -72,6 +72,8 @@ class RewardedAd : ActivityAware, FlutterPlugin, MethodCallHandler {
 
             "loadAd"              -> loadAd(call, result)
 
+            "reloadAd"            -> reloadAd(call, result)
+
             "showAd"              -> showAd(call, result)
 
             else                  -> result.notImplemented()
@@ -168,14 +170,40 @@ class RewardedAd : ActivityAware, FlutterPlugin, MethodCallHandler {
             return
         }
 
+        val autoRefresh = call.argument<Boolean>("autoRefresh")
+
         val rewardedAd = instances[adUnitId] ?: createInstance(adUnitId) ?: run {
             result.error("ACTIVITY_NOT_AVAILABLE", "Activity is not available", null)
             return
         }
 
+        autoRefresh?.apply { rewardedAd.autoRefresh = this }
+
         val parameters = call.getRequestParameters()
 
         rewardedAd.loadAd(parameters)
+
+        result.success(null)
+    }
+
+    private fun reloadAd(call: MethodCall, result: Result) {
+        val adUnitId = call.argument<String>("adUnitId") ?: run {
+            result.error("INVALID_ARGUMENT", "adUnitId is required", null)
+            return
+        }
+
+        val autoRefresh = call.argument<Boolean>("autoRefresh")
+
+        val rewardedAd = instances[adUnitId] ?: createInstance(adUnitId) ?: run {
+            result.error("ACTIVITY_NOT_AVAILABLE", "Activity is not available", null)
+            return
+        }
+
+        autoRefresh?.apply { rewardedAd.autoRefresh = this }
+
+        val parameters = call.getRequestParameters()
+
+        rewardedAd.reloadAd(parameters)
 
         result.success(null)
     }
@@ -237,6 +265,10 @@ class RewardedAd : ActivityAware, FlutterPlugin, MethodCallHandler {
 
         override fun onRewardedLoaded(ad: RewardedAd) {
             channel.invokeMethod("loaded", null)
+        }
+
+        override fun onRewardedRefreshed(ad: RewardedAd) {
+            channel.invokeMethod("refreshed", null)
         }
 
         override fun onRewardedRevenuePaid(ad: RewardedAd, data: RevenueData) {

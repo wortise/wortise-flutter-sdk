@@ -71,6 +71,8 @@ class AppOpenAd : ActivityAware, FlutterPlugin, MethodCallHandler {
 
             "loadAd"              -> loadAd(call, result)
 
+            "reloadAd"            -> reloadAd(call, result)
+
             "showAd"              -> showAd(call, result)
 
             "tryToShowAd"         -> tryToShowAd(call, result)
@@ -173,6 +175,7 @@ class AppOpenAd : ActivityAware, FlutterPlugin, MethodCallHandler {
             return
         }
 
+        val autoRefresh = call.argument<Boolean>("autoRefresh")
         val autoReload  = call.argument<Boolean>("autoReload")
 
         val appOpenAd = get(adUnitId) ?: run {
@@ -180,11 +183,36 @@ class AppOpenAd : ActivityAware, FlutterPlugin, MethodCallHandler {
             return
         }
 
-        autoReload?.apply { appOpenAd.autoReload = this }
+        autoRefresh?.apply { appOpenAd.autoRefresh = this }
+        autoReload?.apply  { appOpenAd.autoReload = this }
 
         val parameters = call.getRequestParameters()
 
         appOpenAd.loadAd(parameters)
+
+        result.success(null)
+    }
+
+    private fun reloadAd(call: MethodCall, result: Result) {
+        val adUnitId = call.argument<String> ("adUnitId") ?: run {
+            result.error("INVALID_ARGUMENT", "adUnitId is required", null)
+            return
+        }
+
+        val autoRefresh = call.argument<Boolean>("autoRefresh")
+        val autoReload  = call.argument<Boolean>("autoReload")
+
+        val appOpenAd = get(adUnitId) ?: run {
+            result.error("ACTIVITY_NOT_AVAILABLE", "Activity is not available", null)
+            return
+        }
+
+        autoRefresh?.apply { appOpenAd.autoRefresh = this }
+        autoReload?.apply  { appOpenAd.autoReload = this }
+
+        val parameters = call.getRequestParameters()
+
+        appOpenAd.reloadAd(parameters)
 
         result.success(null)
     }
@@ -264,6 +292,10 @@ class AppOpenAd : ActivityAware, FlutterPlugin, MethodCallHandler {
 
         override fun onAppOpenLoaded(ad: AppOpenAd) {
             channel.invokeMethod("loaded", null)
+        }
+
+        override fun onAppOpenRefreshed(ad: AppOpenAd) {
+            channel.invokeMethod("refreshed", null)
         }
 
         override fun onAppOpenRevenuePaid(ad: AppOpenAd, data: RevenueData) {
