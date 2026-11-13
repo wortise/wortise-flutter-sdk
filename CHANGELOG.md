@@ -1,3 +1,7 @@
+## 1.8.3
+
+* Raised the Android compileSdk to 36 (required by androidx.browser 1.9.0, a dependency of the Wortise Android SDK)
+
 ## 1.8.2
 
 * Wortise iOS SDK updated to version 1.8.1
