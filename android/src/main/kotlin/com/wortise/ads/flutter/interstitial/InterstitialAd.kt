@@ -8,6 +8,7 @@ import com.wortise.ads.flutter.WortiseFlutterPlugin.Companion.CHANNEL_MAIN
 import com.wortise.ads.flutter.extensions.getRequestParameters
 import com.wortise.ads.flutter.extensions.toMap
 import com.wortise.ads.interstitial.InterstitialAd
+import com.wortise.ads.lifecycle.ActivityLifecycle
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
@@ -187,12 +188,14 @@ class InterstitialAd : ActivityAware, FlutterPlugin, MethodCallHandler {
 
         val interstitialAd = instances[adUnitId]
 
-        if (interstitialAd?.isAvailable != true) {
+        val activity = ActivityLifecycle.current
+
+        if (activity == null || interstitialAd?.isAvailable != true || interstitialAd.isShowing) {
             result.success(false)
             return
         }
 
-        interstitialAd.showAd()
+        interstitialAd.showAd(activity)
 
         result.success(true)
     }
