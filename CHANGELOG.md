@@ -1,6 +1,34 @@
+## 1.8.3
+
+* Raised the Android compileSdk to 36 (required by androidx.browser 1.9.0, a dependency of the Wortise Android SDK)
+
+## 1.8.2
+
+* Wortise iOS SDK updated to version 1.8.1
+* Raised the minimum iOS version to 15.0 (required by the DT Exchange and Meta mediation adapters)
+
+## 1.8.1
+
+* Fixed the Wortise iOS SDK version used by Swift Package Manager (1.8.0)
+
+## 1.8.0
+
+* Wortise Android SDK updated to version 1.8.0
+* Wortise iOS SDK updated to version 1.8.0
+* Support for the new native ads
+* Collapsible banner support
+* Swift Package Manager dependency support for iOS
+* Added cooldown methods
+* Support for AGP 9 and built-in Kotlin, plus corrected minimum SDK and Flutter version constraints
+* Various improvements and fixes
+
 ## 1.7.5
 
 * Wortise iOS SDK updated to version 1.7.3
+
+## 1.7.4
+
+* Added support for Flutter 3.41
 
 ## 1.7.3
 

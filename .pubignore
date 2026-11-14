@@ -1,0 +1,4 @@
+*.diff
+*.log
+AGENTS.md
+CLAUDE.md

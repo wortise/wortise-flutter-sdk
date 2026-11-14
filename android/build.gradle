@@ -1,5 +1,5 @@
 group 'com.wortise.ads.flutter'
-version '1.8.0'
+version '1.8.3'
 
 buildscript {
     ext.kotlin_version = '2.2.21'
@@ -39,7 +39,7 @@ def agpMajor = com.android.Version.ANDROID_GRADLE_PLUGIN_VERSION.tokenize('.')[0
 def javaVersion = agpMajor >= 9 ? JavaVersion.VERSION_11 : JavaVersion.VERSION_1_8
 
 android {
-    compileSdk 35
+    compileSdk 36
 
     if (project.android.hasProperty('namespace')) {
         namespace 'com.wortise.ads.flutter'
@@ -66,7 +66,7 @@ android {
 }
 
 dependencies {
-    api 'com.wortise:android-sdk:1.8.0-beta08'
+    api 'com.wortise:android-sdk:1.8.0'
 
     implementation 'androidx.lifecycle:lifecycle-process:2.6.2'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
