@@ -5,7 +5,7 @@ Pod::Spec.new do |s|
   }
 
   s.name     = 'wortise'
-  s.version  = '1.8.0'
+  s.version  = '1.8.3'
   s.summary  = 'Wortise SDK plugin for Flutter'
   s.homepage = 'https://wortise.com'
 
