@@ -82,10 +82,12 @@ public class WortiseInterstitialAd: NSObject, FlutterPlugin {
         let interstitialAd = WAInterstitialAd(adUnitId: adUnitId)
 
         let delegate            = WortiseInterstitialDelegate(channel)
+
         interstitialAd.delegate = delegate
 
-        instances[adUnitId] = interstitialAd
         delegates[adUnitId] = delegate
+        instances[adUnitId] = interstitialAd
+        
 
         return interstitialAd
     }
@@ -96,8 +98,9 @@ public class WortiseInterstitialAd: NSObject, FlutterPlugin {
             return
         }
 
-        instances.removeValue(forKey: adUnitId)?.destroy()
         delegates.removeValue(forKey: adUnitId)
+        instances.removeValue(forKey: adUnitId)?.destroy()
+        
 
         result(nil)
     }
