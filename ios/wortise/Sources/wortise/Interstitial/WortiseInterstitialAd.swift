@@ -81,7 +81,7 @@ public class WortiseInterstitialAd: NSObject, FlutterPlugin {
 
         let interstitialAd = WAInterstitialAd(adUnitId: adUnitId)
 
-        let delegate = WortiseInterstitialDelegate(channel)
+        let delegate            = WortiseInterstitialDelegate(channel)
         interstitialAd.delegate = delegate
 
         instances[adUnitId] = interstitialAd

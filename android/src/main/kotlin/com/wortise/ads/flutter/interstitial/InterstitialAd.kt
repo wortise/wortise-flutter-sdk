@@ -186,7 +186,7 @@ class InterstitialAd : ActivityAware, FlutterPlugin, MethodCallHandler {
             return
         }
 
-        val activity = ActivityLifecycle.current
+        val activity       = ActivityLifecycle.current
         val interstitialAd = instances[adUnitId]
 
         if (activity == null || interstitialAd?.isAvailable != true || interstitialAd.isShowing) {

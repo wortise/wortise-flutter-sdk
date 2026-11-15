@@ -81,7 +81,7 @@ public class WortiseRewardedAd: NSObject, FlutterPlugin {
 
         let rewardedAd = WARewardedAd(adUnitId: adUnitId)
 
-        let delegate = WortiseRewardedDelegate(channel)
+        let delegate        = WortiseRewardedDelegate(channel)
         rewardedAd.delegate = delegate
 
         instances[adUnitId] = rewardedAd

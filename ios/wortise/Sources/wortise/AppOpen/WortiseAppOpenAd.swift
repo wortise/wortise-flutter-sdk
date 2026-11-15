@@ -84,7 +84,7 @@ public class WortiseAppOpenAd: NSObject, FlutterPlugin {
 
         let appOpenAd = WAAppOpenAd(adUnitId: adUnitId)
 
-        let delegate = WortiseAppOpenDelegate(channel)
+        let delegate       = WortiseAppOpenDelegate(channel)
         appOpenAd.delegate = delegate
 
         instances[adUnitId] = appOpenAd
