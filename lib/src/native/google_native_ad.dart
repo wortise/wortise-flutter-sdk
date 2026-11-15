@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
 import '../base_ad.dart';
@@ -26,7 +27,7 @@ class GoogleNativeAd extends BaseAd {
 
   MethodChannel? _adChannel;
 
-  final String adId = (_currentId++).toString();
+  final String adId = 'google-native-${_currentId++}';
 
   final String adUnitId;
 
@@ -34,16 +35,19 @@ class GoogleNativeAd extends BaseAd {
 
   final void Function(GoogleNativeAdEvent, dynamic)? listener;
 
+  final ValueNotifier<int> viewRevision = ValueNotifier(0);
 
-  GoogleNativeAd(this.adUnitId, this.factoryId, this.listener) {    
-    if (isSupportedPlatform && listener != null) {
+
+  GoogleNativeAd(this.adUnitId, this.factoryId, this.listener) {
+    if (isSupportedPlatform) {
       _adChannel = MethodChannel('${CHANNEL_ID}_$adId');
-      _adChannel?.setMethodCallHandler(_handleEvent);
     }
   }
 
   Future<void> destroy() async {
     if (!isSupportedPlatform) return;
+
+    _adChannel?.setMethodCallHandler(null);
 
     Map<String, dynamic> values = {
       'instanceId': adId
@@ -54,6 +58,8 @@ class GoogleNativeAd extends BaseAd {
 
   Future<void> load() async {
     if (!isSupportedPlatform) return;
+
+    _adChannel?.setMethodCallHandler(_handleEvent);
 
     Map<String, dynamic> values = {
       'adUnitId':   adUnitId,
@@ -80,6 +86,7 @@ class GoogleNativeAd extends BaseAd {
       break;
 
     case "loaded":
+      viewRevision.value++;
       listener?.call(GoogleNativeAdEvent.LOADED, call.arguments);
       break;
 

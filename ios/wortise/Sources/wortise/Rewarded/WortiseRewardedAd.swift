@@ -9,6 +9,8 @@ public class WortiseRewardedAd: NSObject, FlutterPlugin {
 
     private var binaryMessenger: FlutterBinaryMessenger
 
+    private var delegates = [String: WortiseRewardedDelegate]()
+
     private var instances = [String: WARewardedAd]()
 
 
@@ -79,9 +81,11 @@ public class WortiseRewardedAd: NSObject, FlutterPlugin {
 
         let rewardedAd = WARewardedAd(adUnitId: adUnitId)
 
-        rewardedAd.delegate = WortiseRewardedDelegate(channel)
+        let delegate = WortiseRewardedDelegate(channel)
+        rewardedAd.delegate = delegate
 
         instances[adUnitId] = rewardedAd
+        delegates[adUnitId] = delegate
 
         return rewardedAd
     }
@@ -93,6 +97,7 @@ public class WortiseRewardedAd: NSObject, FlutterPlugin {
         }
 
         instances.removeValue(forKey: adUnitId)?.destroy()
+        delegates.removeValue(forKey: adUnitId)
 
         result(nil)
     }

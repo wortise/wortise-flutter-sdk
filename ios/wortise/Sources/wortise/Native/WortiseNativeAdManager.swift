@@ -182,7 +182,7 @@ public class WortiseNativeAdManager: NSObject, WortiseAdWithView, FlutterPlugin 
     fileprivate func append(ad: WANativeAd) -> String {
         lastAdId += 1
 
-        let adId = String(lastAdId)
+        let adId = "wortise-native-\(lastAdId)"
 
         adInstances[adId] = ad
 

@@ -187,9 +187,8 @@ class RewardedAd : ActivityAware, FlutterPlugin, MethodCallHandler {
             return
         }
 
-        val rewardedAd = instances[adUnitId]
-
         val activity = ActivityLifecycle.current
+        val rewardedAd = instances[adUnitId]
 
         if (activity == null || rewardedAd?.isAvailable != true || rewardedAd.isShowing) {
             result.success(false)

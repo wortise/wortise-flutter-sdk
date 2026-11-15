@@ -9,6 +9,8 @@ public class WortiseAppOpenAd: NSObject, FlutterPlugin {
 
     private var binaryMessenger: FlutterBinaryMessenger
 
+    private var delegates = [String: WortiseAppOpenDelegate]()
+
     private var instances = [String: WAAppOpenAd]()
 
 
@@ -82,9 +84,11 @@ public class WortiseAppOpenAd: NSObject, FlutterPlugin {
 
         let appOpenAd = WAAppOpenAd(adUnitId: adUnitId)
 
-        appOpenAd.delegate = WortiseAppOpenDelegate(channel)
+        let delegate = WortiseAppOpenDelegate(channel)
+        appOpenAd.delegate = delegate
 
         instances[adUnitId] = appOpenAd
+        delegates[adUnitId] = delegate
 
         return appOpenAd
     }
@@ -96,6 +100,7 @@ public class WortiseAppOpenAd: NSObject, FlutterPlugin {
         }
 
         instances.removeValue(forKey: adUnitId)?.destroy()
+        delegates.removeValue(forKey: adUnitId)
 
         result(nil)
     }
