@@ -7,6 +7,7 @@ import com.wortise.ads.RevenueData
 import com.wortise.ads.flutter.WortiseFlutterPlugin.Companion.CHANNEL_MAIN
 import com.wortise.ads.flutter.extensions.getRequestParameters
 import com.wortise.ads.flutter.extensions.toMap
+import com.wortise.ads.lifecycle.ActivityLifecycle
 import com.wortise.ads.rewarded.RewardedAd
 import com.wortise.ads.rewarded.models.Reward
 import io.flutter.embedding.engine.plugins.FlutterPlugin
@@ -188,12 +189,14 @@ class RewardedAd : ActivityAware, FlutterPlugin, MethodCallHandler {
 
         val rewardedAd = instances[adUnitId]
 
-        if (rewardedAd?.isAvailable != true) {
+        val activity = ActivityLifecycle.current
+
+        if (activity == null || rewardedAd?.isAvailable != true || rewardedAd.isShowing) {
             result.success(false)
             return
         }
 
-        rewardedAd.showAd()
+        rewardedAd.showAd(activity)
 
         result.success(true)
     }
