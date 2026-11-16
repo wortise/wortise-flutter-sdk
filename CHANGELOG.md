@@ -1,3 +1,12 @@
+## 1.8.4-beta.1
+
+* Wortise Android SDK updated to version 1.8.2-beta01
+* Wortise iOS SDK updated to version 1.8.2-beta.1
+* Fullscreen ads (interstitial, rewarded and app open) expire and are refreshed automatically: new `reloadAd()`, `autoRefresh` parameter and `REFRESHED` event
+* `showAd()` returns false on Android when the ad will not be shown
+* Fixed stale native ad views and ID collisions when native ads are replaced
+* Allowed arm64 simulators when the plugin is used through CocoaPods
+
 ## 1.8.3
 
 * Raised the Android compileSdk to 36 (required by androidx.browser 1.9.0, a dependency of the Wortise Android SDK)
