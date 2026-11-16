@@ -54,6 +54,9 @@ public class WortiseRewardedAd: NSObject, FlutterPlugin {
         case "loadAd":
             loadAd(args, result: result)
 
+        case "reloadAd":
+            reloadAd(args, result: result)
+
         case "showAd":
             showAd(args, result: result)
 
@@ -157,9 +160,32 @@ public class WortiseRewardedAd: NSObject, FlutterPlugin {
 
         let rewardedAd = instances[adUnitId] ?? create(instance: adUnitId)
 
+        if let autoRefresh = args?["autoRefresh"] as? Bool {
+            rewardedAd.autoRefresh = autoRefresh
+        }
+
         let parameters = WARequestParameters.from(args)
 
         rewardedAd.loadAd(parameters: parameters)
+
+        result(nil)
+    }
+
+    private func reloadAd(_ args: [String: Any]?, result: @escaping FlutterResult) {
+        guard let adUnitId = args?["adUnitId"] as? String else {
+            result(FlutterError.invalidArgument("Ad unit ID is required"))
+            return
+        }
+
+        let rewardedAd = instances[adUnitId] ?? create(instance: adUnitId)
+
+        if let autoRefresh = args?["autoRefresh"] as? Bool {
+            rewardedAd.autoRefresh = autoRefresh
+        }
+
+        let parameters = WARequestParameters.from(args)
+
+        rewardedAd.reloadAd(parameters: parameters)
 
         result(nil)
     }
@@ -231,6 +257,10 @@ private class WortiseRewardedDelegate: WARewardedDelegate {
 
     func didPayRevenue(rewardedAd: WARewardedAd, data: WARevenueData) {
         channel.invokeMethod("revenuePaid", arguments: data.toMap())
+    }
+
+    func didRefresh(rewardedAd: WARewardedAd) {
+        channel.invokeMethod("refreshed", arguments: nil)
     }
 
     func didShow(rewardedAd: WARewardedAd) {

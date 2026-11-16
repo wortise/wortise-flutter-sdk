@@ -54,6 +54,9 @@ public class WortiseAppOpenAd: NSObject, FlutterPlugin {
         case "loadAd":
             loadAd(args, result: result)
 
+        case "reloadAd":
+            reloadAd(args, result: result)
+
         case "showAd":
             showAd(args, result: result)
 
@@ -160,6 +163,10 @@ public class WortiseAppOpenAd: NSObject, FlutterPlugin {
 
         let appOpenAd = instances[adUnitId] ?? create(instance: adUnitId)
 
+        if let autoRefresh = args?["autoRefresh"] as? Bool {
+            appOpenAd.autoRefresh = autoRefresh
+        }
+
         if let autoReload = args?["autoReload"] as? Bool {
             appOpenAd.autoReload = autoReload
         }
@@ -167,6 +174,29 @@ public class WortiseAppOpenAd: NSObject, FlutterPlugin {
         let parameters = WARequestParameters.from(args)
 
         appOpenAd.loadAd(parameters: parameters)
+
+        result(nil)
+    }
+
+    private func reloadAd(_ args: [String: Any]?, result: @escaping FlutterResult) {
+        guard let adUnitId = args?["adUnitId"] as? String else {
+            result(FlutterError.invalidArgument("Ad unit ID is required"))
+            return
+        }
+
+        let appOpenAd = instances[adUnitId] ?? create(instance: adUnitId)
+
+        if let autoRefresh = args?["autoRefresh"] as? Bool {
+            appOpenAd.autoRefresh = autoRefresh
+        }
+
+        if let autoReload = args?["autoReload"] as? Bool {
+            appOpenAd.autoReload = autoReload
+        }
+
+        let parameters = WARequestParameters.from(args)
+
+        appOpenAd.reloadAd(parameters: parameters)
 
         result(nil)
     }
@@ -249,6 +279,10 @@ private class WortiseAppOpenDelegate: WAAppOpenDelegate {
 
     func didPayRevenue(appOpenAd: WAAppOpenAd, data: WARevenueData) {
         channel.invokeMethod("revenuePaid", arguments: data.toMap())
+    }
+
+    func didRefresh(appOpenAd: WAAppOpenAd) {
+        channel.invokeMethod("refreshed", arguments: nil)
     }
 
     func didShow(appOpenAd: WAAppOpenAd) {

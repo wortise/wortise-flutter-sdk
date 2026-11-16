@@ -34,6 +34,10 @@ class AppOpenManager {
     appOpenAd.loadAd();
   }
 
+  void reloadAd() {
+    appOpenAd.reloadAd();
+  }
+
 
   Future<dynamic> _handleLifecycleEvent(MethodCall call) async {
     if (call.method == 'foreground') {

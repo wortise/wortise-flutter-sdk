@@ -13,6 +13,7 @@ enum AppOpenAdEvent {
   FAILED_TO_SHOW,
   IMPRESSION,
   LOADED,
+  REFRESHED,
   REVENUE_PAID,
   SHOWN,
 }
@@ -28,12 +29,14 @@ class AppOpenAd {
 
   final String adUnitId;
 
+  final bool autoRefresh;
+
   final bool autoReload;
 
   final void Function(AppOpenAdEvent, dynamic)? listener;
 
 
-  AppOpenAd(this.adUnitId, {this.listener, this.autoReload = false}) {
+  AppOpenAd(this.adUnitId, {this.listener, this.autoRefresh = true, this.autoReload = false}) {
     if (isSupportedPlatform && listener != null) {
       _adChannel = MethodChannel('${CHANNEL_ID}_$adUnitId');
       _adChannel?.setMethodCallHandler(_handleEvent);
@@ -105,11 +108,25 @@ class AppOpenAd {
 
     Map<String, dynamic> values = {
       'adUnitId': adUnitId,
+      'autoRefresh': autoRefresh,
       'autoReload': autoReload,
       'requestParameters': requestParameters?.toMap
     };
 
     await _channel.invokeMethod('loadAd', values);
+  }
+
+  Future<void> reloadAd({RequestParameters? requestParameters}) async {
+    if (!isSupportedPlatform) return;
+
+    Map<String, dynamic> values = {
+      'adUnitId': adUnitId,
+      'autoRefresh': autoRefresh,
+      'autoReload': autoReload,
+      'requestParameters': requestParameters?.toMap
+    };
+
+    await _channel.invokeMethod('reloadAd', values);
   }
 
   Future<bool> showAd() async {
@@ -157,6 +174,10 @@ class AppOpenAd {
 
     case "loaded":
       listener?.call(AppOpenAdEvent.LOADED, call.arguments);
+      break;
+
+    case "refreshed":
+      listener?.call(AppOpenAdEvent.REFRESHED, call.arguments);
       break;
 
     case "revenuePaid":

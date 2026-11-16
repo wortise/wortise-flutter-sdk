@@ -13,6 +13,7 @@ enum InterstitialAdEvent {
   FAILED_TO_SHOW,
   IMPRESSION,
   LOADED,
+  REFRESHED,
   REVENUE_PAID,
   SHOWN,
 }
@@ -30,12 +31,14 @@ class InterstitialAd {
 
   final String adUnitId;
 
+  final bool autoRefresh;
+
   final void Function(InterstitialAdEvent, dynamic)? listener;
 
   final bool reloadOnDismissed;
 
 
-  InterstitialAd(this.adUnitId, {this.listener, this.reloadOnDismissed = false}) {
+  InterstitialAd(this.adUnitId, {this.autoRefresh = true, this.listener, this.reloadOnDismissed = false}) {
     if (isSupportedPlatform) {
       _adChannel = MethodChannel('${CHANNEL_ID}_$adUnitId');
       _adChannel?.setMethodCallHandler(_handleEvent);
@@ -109,10 +112,25 @@ class InterstitialAd {
 
     Map<String, dynamic> values = {
       'adUnitId': adUnitId,
+      'autoRefresh': autoRefresh,
       'requestParameters': requestParameters?.toMap
     };
 
     await _channel.invokeMethod('loadAd', values);
+  }
+
+  Future<void> reloadAd({RequestParameters? requestParameters}) async {
+    if (!isSupportedPlatform) return;
+
+    _requestParameters = requestParameters;
+
+    Map<String, dynamic> values = {
+      'adUnitId': adUnitId,
+      'autoRefresh': autoRefresh,
+      'requestParameters': requestParameters?.toMap
+    };
+
+    await _channel.invokeMethod('reloadAd', values);
   }
 
   Future<bool> showAd() async {
@@ -155,6 +173,10 @@ class InterstitialAd {
 
     case "loaded":
       listener?.call(InterstitialAdEvent.LOADED, call.arguments);
+      break;
+
+    case "refreshed":
+      listener?.call(InterstitialAdEvent.REFRESHED, call.arguments);
       break;
 
     case "revenuePaid":
