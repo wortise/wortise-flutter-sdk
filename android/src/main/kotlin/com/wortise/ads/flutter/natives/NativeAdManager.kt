@@ -186,7 +186,7 @@ class NativeAdManager : AdWithView, FlutterPlugin, MethodCallHandler {
                 return
             }
 
-            val adId = (++lastAdId).toString()
+            val adId = "wortise-native-${++lastAdId}"
 
             adInstances[adId] = ad
 

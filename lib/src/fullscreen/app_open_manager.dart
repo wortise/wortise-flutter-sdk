@@ -37,7 +37,7 @@ class AppOpenManager {
 
   Future<dynamic> _handleLifecycleEvent(MethodCall call) async {
     if (call.method == 'foreground') {
-      appOpenAd.showAd();
+      appOpenAd.tryToShowAd();
     }
   }
 }
