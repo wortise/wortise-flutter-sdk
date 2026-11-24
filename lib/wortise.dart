@@ -15,10 +15,14 @@ export 'src/consent/consent_manager.dart';
 export 'src/banner/banner_ad.dart';
 
 // Fullscreen Ads
+export 'src/fullscreen/ad_preloader.dart' show AdPreloadEvent;
 export 'src/fullscreen/app_open_ad.dart';
+export 'src/fullscreen/app_open_ad_preloader.dart';
 export 'src/fullscreen/app_open_manager.dart';
 export 'src/fullscreen/interstitial_ad.dart';
+export 'src/fullscreen/interstitial_ad_preloader.dart';
 export 'src/fullscreen/rewarded_ad.dart';
+export 'src/fullscreen/rewarded_ad_preloader.dart';
 
 // Native Ads
 export 'src/native/google_native_ad.dart';
