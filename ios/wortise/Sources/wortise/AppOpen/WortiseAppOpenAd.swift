@@ -13,6 +13,8 @@ public class WortiseAppOpenAd: NSObject, FlutterPlugin {
 
     private var instances = [String: WAAppOpenAd]()
 
+    private var preloadDelegates = [String: WortisePreloadDelegate]()
+
 
     public static func register(with registrar: FlutterPluginRegistrar) {
         let binaryMessenger = registrar.messenger()
@@ -39,6 +41,15 @@ public class WortiseAppOpenAd: NSObject, FlutterPlugin {
         case "destroy":
             destroy(args, result: result)
 
+        case "destroyAllPreloads":
+            destroyAllPreloads(result: result)
+
+        case "destroyPreload":
+            destroyPreload(args, result: result)
+
+        case "getNumAdsAvailable":
+            getNumAdsAvailable(args, result: result)
+
         case "isAvailable":
             isAvailable(args, result: result)
 
@@ -54,11 +65,17 @@ public class WortiseAppOpenAd: NSObject, FlutterPlugin {
         case "loadAd":
             loadAd(args, result: result)
 
+        case "pollAd":
+            pollAd(args, result: result)
+
         case "reloadAd":
             reloadAd(args, result: result)
 
         case "showAd":
             showAd(args, result: result)
+
+        case "startPreload":
+            startPreload(args, result: result)
 
         case "tryToShowAd":
             tryToShowAd(args, result: result)
@@ -109,6 +126,34 @@ public class WortiseAppOpenAd: NSObject, FlutterPlugin {
         
 
         result(nil)
+    }
+
+    private func destroyAllPreloads(result: @escaping FlutterResult) {
+        WAAppOpenAdPreloader.destroyAll()
+
+        preloadDelegates.removeAll()
+
+        result(nil)
+    }
+
+    private func destroyPreload(_ args: [String: Any]?, result: @escaping FlutterResult) {
+        guard let adUnitId = args?["adUnitId"] as? String else {
+            result(FlutterError.invalidArgument("Ad unit ID is required"))
+            return
+        }
+
+        preloadDelegates.removeValue(forKey: adUnitId)
+
+        result(WAAppOpenAdPreloader.destroy(adUnitId: adUnitId))
+    }
+
+    private func getNumAdsAvailable(_ args: [String: Any]?, result: @escaping FlutterResult) {
+        guard let adUnitId = args?["adUnitId"] as? String else {
+            result(FlutterError.invalidArgument("Ad unit ID is required"))
+            return
+        }
+
+        result(WAAppOpenAdPreloader.numAdsAvailable(adUnitId: adUnitId))
     }
 
     private func isAvailable(_ args: [String: Any]?, result: @escaping FlutterResult) {
@@ -178,6 +223,33 @@ public class WortiseAppOpenAd: NSObject, FlutterPlugin {
         result(nil)
     }
 
+    private func pollAd(_ args: [String: Any]?, result: @escaping FlutterResult) {
+        guard let adUnitId = args?["adUnitId"] as? String else {
+            result(FlutterError.invalidArgument("Ad unit ID is required"))
+            return
+        }
+
+        guard let appOpenAd = WAAppOpenAdPreloader.pollAd(adUnitId: adUnitId) else {
+            result(false)
+            return
+        }
+
+        instances.removeValue(forKey: adUnitId)?.destroy()
+
+        let channelId = "\(WortiseAppOpenAd.channelId)_\(adUnitId)"
+
+        let channel = FlutterMethodChannel(name: channelId, binaryMessenger: binaryMessenger)
+
+        let delegate = WortiseAppOpenDelegate(channel)
+
+        appOpenAd.delegate = delegate
+
+        delegates[adUnitId] = delegate
+        instances[adUnitId] = appOpenAd
+
+        result(true)
+    }
+
     private func reloadAd(_ args: [String: Any]?, result: @escaping FlutterResult) {
         guard let adUnitId = args?["adUnitId"] as? String else {
             result(FlutterError.invalidArgument("Ad unit ID is required"))
@@ -241,6 +313,31 @@ public class WortiseAppOpenAd: NSObject, FlutterPlugin {
         appOpenAd.tryToShowAd(from: viewController)
 
         result(true)
+    }
+
+    private func startPreload(_ args: [String: Any]?, result: @escaping FlutterResult) {
+        guard let adUnitId = args?["adUnitId"] as? String else {
+            result(FlutterError.invalidArgument("Ad unit ID is required"))
+            return
+        }
+
+        let channelId = "\(WortiseAppOpenAd.channelId)Preloader_\(adUnitId)"
+
+        let channel = FlutterMethodChannel(name: channelId, binaryMessenger: binaryMessenger)
+
+        let delegate = WortisePreloadDelegate(channel)
+
+        let started = WAAppOpenAdPreloader.start(
+            adUnitId:      adUnitId,
+            configuration: WAPreloadConfiguration.from(args),
+            delegate:      delegate
+        )
+
+        if started {
+            preloadDelegates[adUnitId] = delegate
+        }
+
+        result(started)
     }
 }
 

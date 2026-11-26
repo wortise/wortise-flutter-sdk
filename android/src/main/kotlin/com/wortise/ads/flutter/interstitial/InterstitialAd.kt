@@ -5,9 +5,12 @@ import android.content.Context
 import com.wortise.ads.AdError
 import com.wortise.ads.RevenueData
 import com.wortise.ads.flutter.WortiseFlutterPlugin.Companion.CHANNEL_MAIN
+import com.wortise.ads.flutter.extensions.getPreloadConfiguration
 import com.wortise.ads.flutter.extensions.getRequestParameters
 import com.wortise.ads.flutter.extensions.toMap
+import com.wortise.ads.flutter.preload.PreloadChannelListener
 import com.wortise.ads.interstitial.InterstitialAd
+import com.wortise.ads.interstitial.InterstitialAdPreloader
 import com.wortise.ads.lifecycle.ActivityLifecycle
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
@@ -62,6 +65,12 @@ class InterstitialAd : ActivityAware, FlutterPlugin, MethodCallHandler {
 
             "destroy"             -> destroy(call, result)
 
+            "destroyAllPreloads"  -> destroyAllPreloads(result)
+
+            "destroyPreload"      -> destroyPreload(call, result)
+
+            "getNumAdsAvailable"  -> getNumAdsAvailable(call, result)
+
             "isAvailable"         -> isAvailable(call, result)
 
             "isDestroyed"         -> isDestroyed(call, result)
@@ -72,9 +81,13 @@ class InterstitialAd : ActivityAware, FlutterPlugin, MethodCallHandler {
 
             "loadAd"              -> loadAd(call, result)
 
+            "pollAd"              -> pollAd(call, result)
+
             "reloadAd"            -> reloadAd(call, result)
 
             "showAd"              -> showAd(call, result)
+
+            "startPreload"        -> startPreload(call, result)
 
             else                  -> result.notImplemented()
         }
@@ -118,6 +131,30 @@ class InterstitialAd : ActivityAware, FlutterPlugin, MethodCallHandler {
         instances.remove(adUnitId)?.destroy()
 
         result.success(null)
+    }
+
+    private fun destroyAllPreloads(result: Result) {
+        InterstitialAdPreloader.destroyAll()
+
+        result.success(null)
+    }
+
+    private fun destroyPreload(call: MethodCall, result: Result) {
+        val adUnitId = call.argument<String>("adUnitId") ?: run {
+            result.error("INVALID_ARGUMENT", "adUnitId is required", null)
+            return
+        }
+
+        result.success(InterstitialAdPreloader.destroy(adUnitId))
+    }
+
+    private fun getNumAdsAvailable(call: MethodCall, result: Result) {
+        val adUnitId = call.argument<String>("adUnitId") ?: run {
+            result.error("INVALID_ARGUMENT", "adUnitId is required", null)
+            return
+        }
+
+        result.success(InterstitialAdPreloader.getNumAdsAvailable(adUnitId))
     }
 
     private fun isAvailable(call: MethodCall, result: Result) {
@@ -186,6 +223,28 @@ class InterstitialAd : ActivityAware, FlutterPlugin, MethodCallHandler {
         result.success(null)
     }
 
+    private fun pollAd(call: MethodCall, result: Result) {
+        val adUnitId = call.argument<String>("adUnitId") ?: run {
+            result.error("INVALID_ARGUMENT", "adUnitId is required", null)
+            return
+        }
+
+        val interstitialAd = InterstitialAdPreloader.pollAd(adUnitId) ?: run {
+            result.success(false)
+            return
+        }
+
+        instances.remove(adUnitId)?.destroy()
+
+        val adChannel = MethodChannel(binding.binaryMessenger, "${CHANNEL_ID}_$adUnitId")
+
+        interstitialAd.listener = InterstitialAdListener(adChannel)
+
+        instances[adUnitId] = interstitialAd
+
+        result.success(true)
+    }
+
     private fun reloadAd(call: MethodCall, result: Result) {
         val adUnitId = call.argument<String>("adUnitId") ?: run {
             result.error("INVALID_ARGUMENT", "adUnitId is required", null)
@@ -225,6 +284,25 @@ class InterstitialAd : ActivityAware, FlutterPlugin, MethodCallHandler {
         interstitialAd.showAd(activity)
 
         result.success(true)
+    }
+
+
+    private fun startPreload(call: MethodCall, result: Result) {
+        val adUnitId = call.argument<String>("adUnitId") ?: run {
+            result.error("INVALID_ARGUMENT", "adUnitId is required", null)
+            return
+        }
+
+        val preloadChannel = MethodChannel(binding.binaryMessenger, "${CHANNEL_ID}Preloader_$adUnitId")
+
+        val started = InterstitialAdPreloader.start(
+            context       = context,
+            adUnitId      = adUnitId,
+            configuration = call.getPreloadConfiguration(),
+            listener      = PreloadChannelListener(preloadChannel)
+        )
+
+        result.success(started)
     }
 
 

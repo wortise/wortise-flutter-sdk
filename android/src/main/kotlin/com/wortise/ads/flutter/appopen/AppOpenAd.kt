@@ -5,9 +5,12 @@ import android.content.Context
 import com.wortise.ads.AdError
 import com.wortise.ads.RevenueData
 import com.wortise.ads.appopen.AppOpenAd
+import com.wortise.ads.appopen.AppOpenAdPreloader
 import com.wortise.ads.flutter.WortiseFlutterPlugin.Companion.CHANNEL_MAIN
+import com.wortise.ads.flutter.extensions.getPreloadConfiguration
 import com.wortise.ads.flutter.extensions.getRequestParameters
 import com.wortise.ads.flutter.extensions.toMap
+import com.wortise.ads.flutter.preload.PreloadChannelListener
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
@@ -61,6 +64,12 @@ class AppOpenAd : ActivityAware, FlutterPlugin, MethodCallHandler {
 
             "destroy"             -> destroy(call, result)
 
+            "destroyAllPreloads"  -> destroyAllPreloads(result)
+
+            "destroyPreload"      -> destroyPreload(call, result)
+
+            "getNumAdsAvailable"  -> getNumAdsAvailable(call, result)
+
             "isAvailable"         -> isAvailable(call, result)
 
             "isDestroyed"         -> isDestroyed(call, result)
@@ -71,9 +80,13 @@ class AppOpenAd : ActivityAware, FlutterPlugin, MethodCallHandler {
 
             "loadAd"              -> loadAd(call, result)
 
+            "pollAd"              -> pollAd(call, result)
+
             "reloadAd"            -> reloadAd(call, result)
 
             "showAd"              -> showAd(call, result)
+
+            "startPreload"        -> startPreload(call, result)
 
             "tryToShowAd"         -> tryToShowAd(call, result)
 
@@ -123,6 +136,30 @@ class AppOpenAd : ActivityAware, FlutterPlugin, MethodCallHandler {
 
     private fun get(adUnitId: String): AppOpenAd? {
         return instances[adUnitId] ?: createInstance(adUnitId)
+    }
+
+    private fun destroyAllPreloads(result: Result) {
+        AppOpenAdPreloader.destroyAll()
+
+        result.success(null)
+    }
+
+    private fun destroyPreload(call: MethodCall, result: Result) {
+        val adUnitId = call.argument<String>("adUnitId") ?: run {
+            result.error("INVALID_ARGUMENT", "adUnitId is required", null)
+            return
+        }
+
+        result.success(AppOpenAdPreloader.destroy(adUnitId))
+    }
+
+    private fun getNumAdsAvailable(call: MethodCall, result: Result) {
+        val adUnitId = call.argument<String>("adUnitId") ?: run {
+            result.error("INVALID_ARGUMENT", "adUnitId is required", null)
+            return
+        }
+
+        result.success(AppOpenAdPreloader.getNumAdsAvailable(adUnitId))
     }
 
     private fun isAvailable(call: MethodCall, result: Result) {
@@ -193,6 +230,28 @@ class AppOpenAd : ActivityAware, FlutterPlugin, MethodCallHandler {
         result.success(null)
     }
 
+    private fun pollAd(call: MethodCall, result: Result) {
+        val adUnitId = call.argument<String>("adUnitId") ?: run {
+            result.error("INVALID_ARGUMENT", "adUnitId is required", null)
+            return
+        }
+
+        val appOpenAd = AppOpenAdPreloader.pollAd(adUnitId) ?: run {
+            result.success(false)
+            return
+        }
+
+        instances.remove(adUnitId)?.destroy()
+
+        val adChannel = MethodChannel(binding.binaryMessenger, "${CHANNEL_ID}_$adUnitId")
+
+        appOpenAd.listener = AppOpenAdListener(adChannel)
+
+        instances[adUnitId] = appOpenAd
+
+        result.success(true)
+    }
+
     private fun reloadAd(call: MethodCall, result: Result) {
         val adUnitId = call.argument<String> ("adUnitId") ?: run {
             result.error("INVALID_ARGUMENT", "adUnitId is required", null)
@@ -261,6 +320,25 @@ class AppOpenAd : ActivityAware, FlutterPlugin, MethodCallHandler {
         instance.tryToShowAd(activity)
 
         result.success(true)
+    }
+
+
+    private fun startPreload(call: MethodCall, result: Result) {
+        val adUnitId = call.argument<String>("adUnitId") ?: run {
+            result.error("INVALID_ARGUMENT", "adUnitId is required", null)
+            return
+        }
+
+        val preloadChannel = MethodChannel(binding.binaryMessenger, "${CHANNEL_ID}Preloader_$adUnitId")
+
+        val started = AppOpenAdPreloader.start(
+            context       = context,
+            adUnitId      = adUnitId,
+            configuration = call.getPreloadConfiguration(),
+            listener      = PreloadChannelListener(preloadChannel)
+        )
+
+        result.success(started)
     }
 
 
